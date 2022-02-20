@@ -1,0 +1,175 @@
+<template>
+  <div style="background: blanchedalmond">
+    <div class="meet-container">
+      <q-btn
+        @click="setupMediaSources"
+        label="Iniciar Camara"
+      />
+      <q-btn
+        @click="createOffer"
+        label="Crear Oferta"
+      />
+      <div class="meet-container__central">
+        <p>Local</p>
+        <video
+          :srcObject="localStream"
+          autoplay
+          playsinline
+        />
+      </div>
+      <div
+        class="meet-container__float"
+      >
+        <p>Remote</p>
+        <video
+          :srcObject="remoteStream"
+          autoplay
+          playsinline
+        />
+      </div>
+    </div>
+    <q-input
+      v-model="codeId"
+      label="Codigo de sala"
+    />
+    <q-btn
+      @click="answerButton"
+      label="Join Room"
+    />
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
+
+import {
+  addOnSnapshotOfCallDoc,
+  addOnSnapShotOffAnswer, addOnSnapshotOffOffer, getCallDocById,
+  saveAnswerOffCall,
+  saveNewCall,
+  saveOfferOffCall, updateCallById
+} from 'pages/groupMeet/groupMeet-services'
+
+export default defineComponent({
+  name: 'PageMeet',
+  setup () {
+    const codeId = ref('')
+
+    const servers = {
+      iceServers: [
+        {
+          urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
+        }
+      ],
+      iceCandidatePoolSize: 10
+    }
+    // Global State
+    const pc = ref(new RTCPeerConnection(servers))
+    const localStream = ref<null | MediaStream>(null)
+    const remoteStream = ref<null | MediaStream>(null)
+    // 1. Setup media sources
+    const setupMediaSources = async () => {
+      localStream.value = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      })
+      remoteStream.value = new MediaStream()
+
+      if (!localStream.value) return
+
+      localStream.value.getTracks().forEach((track) => {
+        pc.value.addTrack(track, localStream.value as MediaStream)
+      })
+
+      pc.value.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+          remoteStream.value?.addTrack(track)
+        })
+      }
+    }
+
+    const createOffer = async () => {
+      // Create offer
+      const offerDescription = await pc.value.createOffer()
+      await pc.value.setLocalDescription(offerDescription)
+
+      const offer = {
+        sdp: offerDescription.sdp,
+        type: offerDescription.type
+      }
+
+      const callId = await saveNewCall({ offer })
+
+      codeId.value = callId
+
+      // Get candidates for caller, save to db
+      pc.value.onicecandidate = (event) => {
+        if (event.candidate) void saveOfferOffCall(callId, event.candidate.toJSON())
+      }
+
+      addOnSnapshotOfCallDoc(callId, (data) => {
+        if (!pc.value.currentRemoteDescription && data?.answer) {
+          console.log('Set remote description: ', data.answer)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          const answerDescription = new RTCSessionDescription(data?.answer)
+          void pc.value.setRemoteDescription(answerDescription)
+        }
+      })
+
+      addOnSnapShotOffAnswer(callId, (candidate) => {
+        void pc.value.addIceCandidate(candidate)
+      })
+    }
+
+    // 3. Answer the call with the unique ID
+    const answerButton = async () => {
+      const callId = codeId.value
+
+      pc.value.onicecandidate = (event) => {
+        if (event.candidate) void saveAnswerOffCall(callId, event.candidate.toJSON())
+      }
+      const callData = await getCallDocById(callId)
+
+      const offerDescription = callData?.offer as RTCSessionDescriptionInit
+
+      await pc.value.setRemoteDescription(new RTCSessionDescription(offerDescription))
+
+      const answerDescription = await pc.value.createAnswer()
+      await pc.value.setLocalDescription(answerDescription)
+
+      const answer = {
+        type: answerDescription.type,
+        sdp: answerDescription.sdp
+      }
+
+      await updateCallById(callId, { answer })
+
+      addOnSnapshotOffOffer(callId, (data) => {
+        void pc.value.addIceCandidate(data)
+      })
+    }
+
+    return {
+      pc,
+      codeId,
+      localStream,
+      remoteStream,
+      setupMediaSources,
+      createOffer,
+      answerButton
+    }
+  }
+})
+</script>
+
+<style scoped lang="sass">
+.meet-container
+  width: 100%
+  display: flex
+  flex-direction: row
+  &__central
+    width: 50%
+  &__float
+    width: 50%
+
+</style>
