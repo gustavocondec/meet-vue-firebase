@@ -49,3 +49,18 @@ export async function openShareMonitor () {
   }
   return await navigator.mediaDevices.getDisplayMedia(constraints)
 }
+
+export const getDefaultUserMedia = async () => {
+  const userMedia = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: false
+  })
+  return userMedia
+}
+
+export const setTracksToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
+  if (!stream) return
+  stream.getTracks().forEach((track) => {
+    pc.addTrack(track, stream)
+  })
+}

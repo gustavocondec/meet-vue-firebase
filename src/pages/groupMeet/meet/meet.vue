@@ -43,12 +43,14 @@
 import { defineComponent, ref } from 'vue'
 
 import {
-  addOnSnapshotOfCallDoc,
-  addOnSnapShotOffAnswer, addOnSnapshotOffOffer, getCallDocById,
+  listenChangesOfCallId,
+  listenChangesOfAnswerOfCallId, listenChangesOfOfferOfCallId, getCallDocById,
   saveAnswerOffCall,
   saveNewCall,
   saveOfferOffCall, updateCallById
 } from 'pages/groupMeet/groupMeet-services'
+import { getDefaultUserMedia, setTracksToPc } from 'pages/groupMeet/controllerMedia'
+import { setOnTrackToPc } from 'pages/controllerPeerConnection'
 
 export default defineComponent({
   name: 'PageMeet',
@@ -69,23 +71,12 @@ export default defineComponent({
     const remoteStream = ref<null | MediaStream>(null)
     // 1. Setup media sources
     const setupMediaSources = async () => {
-      localStream.value = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false
-      })
+      localStream.value = await getDefaultUserMedia()
       remoteStream.value = new MediaStream()
 
-      if (!localStream.value) return
+      setTracksToPc(localStream.value, pc.value)
 
-      localStream.value.getTracks().forEach((track) => {
-        pc.value.addTrack(track, localStream.value as MediaStream)
-      })
-
-      pc.value.ontrack = (event) => {
-        event.streams[0].getTracks().forEach((track) => {
-          remoteStream.value?.addTrack(track)
-        })
-      }
+      setOnTrackToPc(pc.value, remoteStream.value)
     }
 
     const createOffer = async () => {
@@ -107,16 +98,16 @@ export default defineComponent({
         if (event.candidate) void saveOfferOffCall(callId, event.candidate.toJSON())
       }
 
-      addOnSnapshotOfCallDoc(callId, (data) => {
-        if (!pc.value.currentRemoteDescription && data?.answer) {
-          console.log('Set remote description: ', data.answer)
+      listenChangesOfCallId(callId, (newCallDoc) => {
+        if (!pc.value.currentRemoteDescription && newCallDoc?.answer) {
+          console.log('Set remote description: ', newCallDoc.answer)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          const answerDescription = new RTCSessionDescription(data?.answer)
+          const answerDescription = new RTCSessionDescription(newCallDoc?.answer)
           void pc.value.setRemoteDescription(answerDescription)
         }
       })
 
-      addOnSnapShotOffAnswer(callId, (candidate) => {
+      listenChangesOfAnswerOfCallId(callId, (candidate) => {
         void pc.value.addIceCandidate(candidate)
       })
     }
@@ -144,7 +135,7 @@ export default defineComponent({
 
       await updateCallById(callId, { answer })
 
-      addOnSnapshotOffOffer(callId, (data) => {
+      listenChangesOfOfferOfCallId(callId, (data) => {
         void pc.value.addIceCandidate(data)
       })
     }
