@@ -1,0 +1,18 @@
+# Using Standard App Engine # Flex App Engine use docker
+runtime: nodejs14
+service: meeting
+handlers:
+  # Serve all static files with urls ending with a file extension
+  - url: /(.*\..+)$
+    static_files: spa/\1
+    upload: spa/(.*\..+)$
+    # catch all handler to index.html
+  - url: /.*
+    static_files: spa/index.html
+    upload: spa/index.html
+
+automatic_scaling:
+  max_idle_instances: 1
+  max_instances: 10
+  max_concurrent_requests: 80
+  target_throughput_utilization: 0.95

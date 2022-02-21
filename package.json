@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.12.5",
+    "copy-webpack-plugin": "^10.2.4",
     "core-js": "^3.6.5",
     "dotenv": "^16.0.0",
     "firebase": "^9.6.6",

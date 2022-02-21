@@ -9,9 +9,9 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { configure } = require('quasar/wrappers')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 require('dotenv').config({ path: './.env' })
-console.log(process.env)
 module.exports = configure(function (ctx) {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
@@ -84,6 +84,17 @@ module.exports = configure(function (ctx) {
           appId: process.env.appId,
           measurementId: process.env.measurementId
         }
+      },
+
+      extendWebpack (cfg) {
+        cfg.plugins.push(new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: 'gcp/app.yaml',
+              to: '../'
+            }
+          ]
+        }))
       },
 
       // https://quasar.dev/quasar-cli/handling-webpack
