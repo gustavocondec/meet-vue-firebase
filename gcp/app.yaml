@@ -6,9 +6,11 @@ handlers:
   - url: /(.*\..+)$
     static_files: spa/\1
     upload: spa/(.*\..+)$
+    secure: always
     # catch all handler to index.html
   - url: /.*
     static_files: spa/index.html
+    secure: always
     upload: spa/index.html
 
 automatic_scaling:

@@ -1,8 +1,3 @@
-runtime: nodejs14
-service: meeting
-
-automatic_scaling:
-  max_idle_instances: 1
-  max_intances: 10
-  max_concurrent_requests: 80
-  target_throughput_utilization: 0.95
+dispatch:
+  - url: "meeting.codeart.dev/*"
+    service: meeting
