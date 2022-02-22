@@ -10,9 +10,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { configure } = require('quasar/wrappers')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-
-require('dotenv').config({ path: './.env' })
 module.exports = configure(function (ctx) {
+  // Si esta en desarrollo que cargue nuestro .env
+  if (ctx.dev) require('dotenv').config({ path: './.env' })
+
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: {
@@ -91,6 +92,10 @@ module.exports = configure(function (ctx) {
           patterns: [
             {
               from: 'gcp/app.yaml',
+              to: '../'
+            },
+            {
+              from: 'gcp/.gcloudignore',
               to: '../'
             }
           ]
