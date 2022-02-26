@@ -32,7 +32,6 @@
 <script lang="ts">
 import { useRouter } from 'vue-router'
 import { defineComponent, ref } from 'vue'
-import { useStore } from 'src/store'
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
@@ -41,12 +40,6 @@ export default defineComponent({
     const codigo = ref('')
     const $router = useRouter()
     const q = useQuasar()
-
-    const $store = useStore()
-    $store.commit('rtcModule/setPC', new RTCPeerConnection({
-      iceServers: $store.state.rtcModule.iceServers,
-      iceCandidatePoolSize: $store.state.rtcModule.iceCandidatePoolSize
-    }))
 
     /**
      * @description Create a offer

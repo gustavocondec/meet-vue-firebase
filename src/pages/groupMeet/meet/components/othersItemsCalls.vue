@@ -16,14 +16,13 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
-import { IItemCall } from 'pages/groupMeet/shared/IGroupMeet'
 
 export default defineComponent({
   name: 'OthersItemsCalls',
   components: { MyItemCall },
   props: {
     items: {
-      type: Array as PropType<Array<IItemCall>>,
+      type: Array as PropType<Array<any>>,
       required: true,
       default: () => []
     }

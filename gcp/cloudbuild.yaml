@@ -4,9 +4,21 @@ steps:
     args: ['install']
   - name: node:14
     entrypoint: npm
+    args: [ "run", "create-env" ]
+    env:
+      - 'MONGODB_URI=${_MONGODB_URI}'
+      - 'SECRETORPRIVATEKEY=${_SECRETORPRIVATEKEY}'
+      - 'apiKey=${_API_KEY}'
+      - 'authDomain=${_AUTH_DOMAIN}'
+      - 'databaseURL=${_DATABASE_URL}'
+      - 'projectId=${_PROJECT_ID}'
+      - 'storageBucket=${_STORAGE_BUCKET}'
+      - 'messagingSenderId=${_MESSAGING_SENDER_ID}'
+      - 'appId=${_APP_ID}'
+      - 'measurementId=${_MEASUREMENT_ID}'
+  - name: node:14
+    entrypoint: npm
     args: ['run', 'build' ]
-# - name: "gcr.io/cloud-builders/gcloud"
-#   args: ["app", "deploy"]
   - name: gcr.io/cloud-builders/gcloud
     entrypoint: bash
     args: [ -c, gcloud app deploy ./dist/app.yaml ]

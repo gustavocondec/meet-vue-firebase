@@ -13,7 +13,6 @@
 import { defineComponent, computed } from 'vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 import Buttonsbottom from 'pages/groupMeet/preMeet/components/buttonsbottom.vue'
-import { useStore } from 'src/store'
 
 export default defineComponent({
   name: 'PreMeetContainerVideo',
@@ -22,9 +21,8 @@ export default defineComponent({
     MyItemCall
   },
   setup () {
-    const $store = useStore()
-    const streamAudio = computed(():MediaStream | null => $store.state.groupMeetModule.myStream.streamAudio)
-    const streamVideo = computed((): MediaStream | null => $store.state.groupMeetModule.myStream.streamCamera)
+    const streamAudio = computed(():MediaStream | null => null)
+    const streamVideo = computed((): MediaStream | null => null)
     return {
       streamAudio,
       streamVideo

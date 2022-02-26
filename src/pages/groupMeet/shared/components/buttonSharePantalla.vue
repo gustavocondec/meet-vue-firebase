@@ -12,32 +12,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, nextTick } from 'vue'
-import { useStore } from 'src/store'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'ButtonSharePantalla',
   setup () {
     const isActive = ref(false)
-    const $store = useStore()
-
-    watch(isActive, async (newVal) => {
-      if (newVal) {
-        await $store.dispatch('groupMeetModule/openMonitor')
-        void nextTick(() => {
-          if ($store.state.groupMeetModule.myStream.streamMonitor) {
-            $store.state.groupMeetModule.myStream.streamMonitor.getVideoTracks()[0].onended = () => {
-              void $store.dispatch('groupMeetModule/closeMonitor').then(() => 1 + 2)
-              isActive.value = false
-            }
-          }
-        })
-      } else {
-        void await $store.dispatch('groupMeetModule/closeMonitor')
-      }
-    }, {
-      immediate: true
-    })
 
     return {
       isActive

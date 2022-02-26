@@ -31,21 +31,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { useStore } from 'src/store'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'ButtonCamera',
   setup () {
     const isActive = ref(true)
-    const $store = useStore()
-
-    watch(isActive, (newVal) => {
-      if (newVal) void $store.dispatch('groupMeetModule/openDefaultCamera')
-      else void $store.dispatch('groupMeetModule/closeDefaultCamera')
-    }, {
-      immediate: true
-    })
 
     return {
       isActive

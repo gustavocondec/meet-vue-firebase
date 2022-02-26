@@ -12,7 +12,7 @@ const { configure } = require('quasar/wrappers')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = configure(function (ctx) {
   // Si esta en desarrollo que cargue nuestro .env
-  if (ctx.dev) require('dotenv').config({ path: './.env' })
+  require('dotenv').config({ path: './.env' })
 
   return {
     // https://quasar.dev/quasar-cli/supporting-ts

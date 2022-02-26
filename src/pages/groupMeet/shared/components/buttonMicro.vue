@@ -32,22 +32,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { useStore } from 'src/store'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'ButtonMicro',
   setup () {
     const isActive = ref(false)
-    const $store = useStore()
-    watch(isActive, (newVal) => {
-      if (newVal) {
-        console.log('open audio input')
-        void $store.dispatch('groupMeetModule/openDefaultAudioInput')
-      } else void $store.dispatch('groupMeetModule/closeDefaultInputAudio')
-    }, {
-      immediate: true
-    })
 
     return {
       isActive
