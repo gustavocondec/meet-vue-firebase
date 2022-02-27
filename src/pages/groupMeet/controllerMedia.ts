@@ -57,10 +57,3 @@ export const getDefaultUserMedia = async () => {
   })
   return userMedia
 }
-
-export const setTracksToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
-  if (!stream) return
-  stream.getTracks().forEach((track) => {
-    pc.addTrack(track, stream)
-  })
-}

@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 
 import {
   listenChangesOfCallId,
@@ -49,33 +49,32 @@ import {
   saveNewCall,
   saveOfferOffCall, updateCallById
 } from 'pages/groupMeet/groupMeet-services'
-import { getDefaultUserMedia, setTracksToPc } from 'pages/groupMeet/controllerMedia'
-import { setOnTrackToPc } from 'pages/controllerPeerConnection'
+import { getDefaultUserMedia } from 'pages/groupMeet/controllerMedia'
+import { setOnTrackToPc, setTracksToPc } from 'pages/controllerPeerConnection'
+import { useStore } from 'src/store'
 
 export default defineComponent({
   name: 'PageMeet',
   setup () {
     const codeId = ref('')
+    const $store = useStore()
+    const pc = computed(() => $store.state.groupMeetModule.pc)
 
-    const servers = {
-      iceServers: [
-        {
-          urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302']
-        }
-      ],
-      iceCandidatePoolSize: 10
-    }
     // Global State
-    const pc = ref(new RTCPeerConnection(servers))
-    const localStream = ref<null | MediaStream>(null)
-    const remoteStream = ref<null | MediaStream>(null)
+    const localStream = computed({
+      get: () => $store.state.groupMeetModule.localStream,
+      set: (value) => $store.commit('groupMeetModule/setLocalStream', value)
+    })
+    const remoteStream = computed({
+      get: () => $store.state.groupMeetModule.remoteStream,
+      set: (value) => $store.commit('groupMeetModule/setRemoteStream', value)
+    })
     // 1. Setup media sources
     const setupMediaSources = async () => {
       localStream.value = await getDefaultUserMedia()
-      remoteStream.value = new MediaStream()
-
       setTracksToPc(localStream.value, pc.value)
 
+      remoteStream.value = new MediaStream()
       setOnTrackToPc(pc.value, remoteStream.value)
     }
 
@@ -90,7 +89,6 @@ export default defineComponent({
       }
 
       const callId = await saveNewCall({ offer })
-
       codeId.value = callId
 
       // Get candidates for caller, save to db
@@ -106,7 +104,6 @@ export default defineComponent({
           void pc.value.setRemoteDescription(answerDescription)
         }
       })
-
       listenChangesOfAnswerOfCallId(callId, (candidate) => {
         void pc.value.addIceCandidate(candidate)
       })

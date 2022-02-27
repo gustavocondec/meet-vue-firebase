@@ -6,3 +6,9 @@ export const setOnTrackToPc = (pc:RTCPeerConnection, remoteStream: MediaStream|u
     })
   }
 }
+export const setTracksToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
+  if (!stream) return
+  stream.getTracks().forEach((track) => {
+    pc.addTrack(track, stream)
+  })
+}
