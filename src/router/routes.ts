@@ -26,7 +26,7 @@ const routes: RouteRecordRaw[] = [
     }]
   },
   {
-    path: '/meet',
+    path: '/:callId',
     component: () => import('layouts/MainLayout.vue'),
     children: [{
       path: '',

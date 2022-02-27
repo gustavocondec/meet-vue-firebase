@@ -9,7 +9,6 @@ import { computed } from 'vue'
 import { useStore } from 'src/store'
 import { getDefaultUserMedia } from 'pages/groupMeet/controllerMedia'
 import { setOnTrackToPc, setTracksLocalToPc } from 'pages/controllerPeerConnection'
-import { useQuasar } from 'quasar'
 
 export const groupMeetApi = () => {
   const callId = computed({
@@ -17,7 +16,6 @@ export const groupMeetApi = () => {
     set: (value) => $store.commit('groupMeetModule/setCallId', value)
   })
   const $store = useStore()
-  const $quasar = useQuasar()
   const pc = computed(() => $store.state.groupMeetModule.pc)
 
   // Global State
@@ -35,12 +33,8 @@ export const groupMeetApi = () => {
     setupMediaRemote()
   }
   const setupMediaLocal = async () => {
-    try {
-      localStream.value = await getDefaultUserMedia()
-      setTracksLocalToPc(localStream.value, pc.value)
-    } catch (e) {
-      $quasar.notify({ type: 'negative', message: 'No se pudo acceder a la camara o microfono', timeout: 10000 })
-    }
+    localStream.value = await getDefaultUserMedia()
+    setTracksLocalToPc(localStream.value, pc.value)
   }
   const setupMediaRemote = () => {
     remoteStream.value = new MediaStream()

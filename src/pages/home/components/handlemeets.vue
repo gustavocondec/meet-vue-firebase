@@ -48,7 +48,7 @@ export default defineComponent({
       await setupMediaLocal()
       setupMediaRemote()
       await createOffer()
-      await $router.push('/meet')
+      await $router.push('/' + callId.value)
     }
 
     const joinCode = async () => {
@@ -56,7 +56,7 @@ export default defineComponent({
         await setupMediaLocal()
         setupMediaRemote()
         await answerButton()
-        await $router.push('/meet')
+        await $router.push('/' + callId.value)
       } catch (e) {
         q.notify({ color: 'red', message: `Ocurrio un error: ${String(e)}` })
       }

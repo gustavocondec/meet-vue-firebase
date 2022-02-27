@@ -6,20 +6,13 @@
         <my-item-call
           :stream-video="localStream"
         />
-        <video
-          :srcObject="localStream"
-          autoplay
-          playsinline
-        />
       </div>
       <div
         class="meet-container__float"
       >
         <p>Remote</p>
-        <video
-          :srcObject="remoteStream"
-          autoplay
-          playsinline
+        <my-item-call
+          :stream-video="remoteStream"
         />
       </div>
     </div>
@@ -29,17 +22,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { useRoute } from 'vue-router'
+import { defineComponent, onMounted } from 'vue'
 import { groupMeetApi } from 'pages/groupMeet/api-composition'
 import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
+import { existCallId } from 'pages/groupMeet/groupMeet-services'
 
 export default defineComponent({
   name: 'PageMeet',
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { localStream, remoteStream, callId } = groupMeetApi()
+    const { localStream, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+    const $route = useRoute()
+    onMounted(async () => {
+      if (!callId.value) {
+        callId.value = String($route.params.callId)
+        if (await existCallId(callId.value)) {
+          await setupMediaLocal()
+          setupMediaRemote()
+          await answerButton()
+        } else {
+          console.info('No existe calls con ese Id')
+        }
+      }
+    })
 
     return {
       localStream,

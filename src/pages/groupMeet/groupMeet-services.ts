@@ -5,6 +5,11 @@ import firestore = firebase.firestore
 // @ts-ignore
 firebase.initializeApp(process.env.fb)
 
+export const existCallId = async (callId:string) => {
+  const callDoc = await firebase.firestore().doc(`calls/${callId}`).get()
+  return callDoc.exists
+}
+
 export const getCallDocById = async (callId:string) => {
   const callDoc = await firebase.firestore().doc(`calls/${callId}`).get()
   if (!callDoc.exists) throw new Error('No Existe un call con el id' + callId)
