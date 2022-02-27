@@ -9,7 +9,7 @@
     />
     <div class="container-handlemeets__container-codigo">
       <q-input
-        v-model="codigo"
+        v-model="callId"
         dense
         label="Ingresa un código o vinculo"
         outlined
@@ -19,11 +19,11 @@
         </template>
       </q-input>
       <q-btn
-        :color="codigo? 'primary':'gray'"
-        :disable="!codigo"
+        :color="callId? 'primary':'gray'"
+        :disable="!callId"
         flat
         label="Unirse"
-        @click="joinCode(codigo)"
+        @click="joinCode()"
       />
     </div>
   </div>
@@ -31,34 +31,39 @@
 
 <script lang="ts">
 import { useRouter } from 'vue-router'
-import { defineComponent, ref } from 'vue'
+import { defineComponent } from 'vue'
 import { useQuasar } from 'quasar'
+import { groupMeetApi } from 'pages/groupMeet/api-composition'
 
 export default defineComponent({
   name: 'HandleMeets',
   setup () {
-    const codigo = ref('')
     const $router = useRouter()
     const q = useQuasar()
-
+    const { createOffer, answerButton, callId, setupMediaRemote, setupMediaLocal } = groupMeetApi()
     /**
      * @description Create a offer
      * */
-    const createRoom = () => {
-      console.log('create Room')
+    const createRoom = async () => {
+      await setupMediaLocal()
+      setupMediaRemote()
+      await createOffer()
+      await $router.push('/meet')
     }
 
-    const joinCode = async (codigoId:string) => {
+    const joinCode = async () => {
       try {
-        console.log('Join')
-        await $router.push('/')
+        await setupMediaLocal()
+        setupMediaRemote()
+        await answerButton()
+        await $router.push('/meet')
       } catch (e) {
         q.notify({ color: 'red', message: `Ocurrio un error: ${String(e)}` })
       }
     }
 
     return {
-      codigo,
+      callId,
       createRoom,
       joinCode
     }
