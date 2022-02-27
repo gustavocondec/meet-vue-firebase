@@ -3,6 +3,9 @@
     <div class="meet-container">
       <div class="meet-container__central">
         <p>Local</p>
+        <my-item-call
+          :stream-video="localStream"
+        />
         <video
           :srcObject="localStream"
           autoplay
@@ -20,23 +23,28 @@
         />
       </div>
     </div>
+    <p>{{ callId }}</p>
+    <meet-buttons-bottom />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { groupMeetApi } from 'pages/groupMeet/api-composition'
+import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
+import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 
 export default defineComponent({
   name: 'PageMeet',
-  components: {},
+  components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { localStream, remoteStream } = groupMeetApi()
+    const { localStream, remoteStream, callId } = groupMeetApi()
 
     return {
       localStream,
-      remoteStream
+      remoteStream,
+      callId
     }
   }
 })

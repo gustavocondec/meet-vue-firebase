@@ -8,7 +8,7 @@ import {
 import { computed } from 'vue'
 import { useStore } from 'src/store'
 import { getDefaultUserMedia } from 'pages/groupMeet/controllerMedia'
-import { setOnTrackToPc, setTracksToPc } from 'pages/controllerPeerConnection'
+import { setOnTrackToPc, setTracksLocalToPc } from 'pages/controllerPeerConnection'
 import { useQuasar } from 'quasar'
 
 export const groupMeetApi = () => {
@@ -37,7 +37,7 @@ export const groupMeetApi = () => {
   const setupMediaLocal = async () => {
     try {
       localStream.value = await getDefaultUserMedia()
-      setTracksToPc(localStream.value, pc.value)
+      setTracksLocalToPc(localStream.value, pc.value)
     } catch (e) {
       $quasar.notify({ type: 'negative', message: 'No se pudo acceder a la camara o microfono', timeout: 10000 })
     }

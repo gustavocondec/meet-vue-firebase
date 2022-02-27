@@ -31,13 +31,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
+import { groupMeetApi } from 'pages/groupMeet/api-composition'
 
 export default defineComponent({
   name: 'ButtonCamera',
   setup () {
     const isActive = ref(true)
+    const { localStream } = groupMeetApi()
 
+    let backupVideoTrack:MediaStreamTrack
+    // const backupAudioTrack:MediaStreamTrack
+    watch(isActive, async (newValue) => {
+      if (!localStream.value) return
+      if (newValue) {
+        console.log('newVal ', true, localStream.value, backupVideoTrack)
+        const auxMediaDevices = await navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+        const auxTrackVideos = auxMediaDevices.getVideoTracks()
+        localStream.value.addTrack(auxTrackVideos[0])
+      } else {
+        console.log('newVal ', false, localStream.value)
+        const trackVideos = localStream.value.getVideoTracks()
+        console.log('track videos', trackVideos)
+        trackVideos[0].enabled = false
+        trackVideos[0].stop()
+        localStream.value.removeTrack(trackVideos[0])
+        console.log('track videos', localStream.value.getVideoTracks())
+      }
+    })
     return {
       isActive
     }
