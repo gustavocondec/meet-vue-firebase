@@ -29,7 +29,7 @@
       </div>
     </div>
     <q-input
-      v-model="codeId"
+      v-model="callId"
       label="Codigo de sala"
     />
     <q-btn
@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, computed } from 'vue'
 
 import {
   listenChangesOfCallId,
@@ -56,7 +56,10 @@ import { useStore } from 'src/store'
 export default defineComponent({
   name: 'PageMeet',
   setup () {
-    const codeId = ref('')
+    const callId = computed({
+      get: () => $store.state.groupMeetModule.callId,
+      set: (value) => $store.commit('groupMeetModule/setCallId', value)
+    })
     const $store = useStore()
     const pc = computed(() => $store.state.groupMeetModule.pc)
 
@@ -88,15 +91,14 @@ export default defineComponent({
         type: offerDescription.type
       }
 
-      const callId = await saveNewCall({ offer })
-      codeId.value = callId
+      callId.value = await saveNewCall({ offer })
 
       // Get candidates for caller, save to db
       pc.value.onicecandidate = (event) => {
-        if (event.candidate) void saveOfferOffCall(callId, event.candidate.toJSON())
+        if (event.candidate) void saveOfferOffCall(callId.value, event.candidate.toJSON())
       }
 
-      listenChangesOfCallId(callId, (newCallDoc) => {
+      listenChangesOfCallId(callId.value, (newCallDoc) => {
         if (!pc.value.currentRemoteDescription && newCallDoc?.answer) {
           console.log('Set remote description: ', newCallDoc.answer)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -104,19 +106,17 @@ export default defineComponent({
           void pc.value.setRemoteDescription(answerDescription)
         }
       })
-      listenChangesOfAnswerOfCallId(callId, (candidate) => {
+      listenChangesOfAnswerOfCallId(callId.value, (candidate) => {
         void pc.value.addIceCandidate(candidate)
       })
     }
 
     // 3. Answer the call with the unique ID
     const answerButton = async () => {
-      const callId = codeId.value
-
       pc.value.onicecandidate = (event) => {
-        if (event.candidate) void saveAnswerOffCall(callId, event.candidate.toJSON())
+        if (event.candidate) void saveAnswerOffCall(callId.value, event.candidate.toJSON())
       }
-      const callData = await getCallDocById(callId)
+      const callData = await getCallDocById(callId.value)
 
       const offerDescription = callData?.offer as RTCSessionDescriptionInit
 
@@ -130,16 +130,16 @@ export default defineComponent({
         sdp: answerDescription.sdp
       }
 
-      await updateCallById(callId, { answer })
+      await updateCallById(callId.value, { answer })
 
-      listenChangesOfOfferOfCallId(callId, (data) => {
+      listenChangesOfOfferOfCallId(callId.value, (data) => {
         void pc.value.addIceCandidate(data)
       })
     }
 
     return {
       pc,
-      codeId,
+      callId,
       localStream,
       remoteStream,
       setupMediaSources,
