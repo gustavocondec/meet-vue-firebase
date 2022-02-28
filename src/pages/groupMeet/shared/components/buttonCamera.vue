@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
-import { groupMeetApi } from 'pages/groupMeet/api-composition'
+import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
 
 export default defineComponent({
   name: 'ButtonCamera',

@@ -2,8 +2,6 @@
 import { store } from 'quasar/wrappers'
 import { InjectionKey } from 'vue'
 import groupMeetModule, { groupMeetStateInterface } from 'pages/groupMeet/groupMeet-state'
-import rtcModule from 'src/store/module-rtc'
-import { RtcStateInterface } from 'src/store/module-rtc/state'
 
 import { createStore, Store as VuexStore, useStore as vuexUseStore } from 'vuex'
 
@@ -25,7 +23,6 @@ export interface StateInterface {
   // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
   // example: unknown
   groupMeetModule: groupMeetStateInterface,
-  rtcModule: RtcStateInterface
 }
 
 // provide typings for `this.$store`
@@ -41,8 +38,7 @@ export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-ke
 export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
-      groupMeetModule,
-      rtcModule
+      groupMeetModule
     },
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only

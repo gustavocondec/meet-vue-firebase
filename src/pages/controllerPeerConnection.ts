@@ -1,10 +1,10 @@
 
-export const setOnTrackToPc = (pc:RTCPeerConnection, remoteStream: MediaStream|undefined) => {
-  console.log('setOnTrackToPc')
+export const setOnTrackRemoteToPc = (pc:RTCPeerConnection, remoteStream: MediaStream|undefined) => {
+  console.log('setOnTrackRemoteToPc')
   pc.ontrack = (event) => {
-    console.log('setOnTrackToPc', 'se activa evento pc.onTrack')
+    console.log('setOnTrackRemoteToPc', 'se activa evento pc.onTrack', event)
     event.streams[0].getTracks().forEach((track) => {
-      console.log('setOnTrackToPc', 'añade track', track)
+      console.log('setOnTrackRemoteToPc', 'añade track', track)
       remoteStream?.addTrack(track)
     })
   }

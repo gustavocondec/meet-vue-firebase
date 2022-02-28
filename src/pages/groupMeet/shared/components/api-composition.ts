@@ -7,8 +7,8 @@ import {
 } from 'pages/groupMeet/groupMeet-services'
 import { computed } from 'vue'
 import { useStore } from 'src/store'
-import { getDefaultUserMedia } from 'pages/groupMeet/controllerMedia'
-import { setOnTrackToPc, setTracksLocalToPc } from 'pages/controllerPeerConnection'
+import { getDefaultUserMedia } from 'pages/groupMeet/shared/components/controllerMedia'
+import { setOnTrackRemoteToPc, setTracksLocalToPc } from 'pages/controllerPeerConnection'
 
 export const groupMeetApi = () => {
   const callId = computed({
@@ -33,15 +33,18 @@ export const groupMeetApi = () => {
     setupMediaRemote()
   }
   const setupMediaLocal = async () => {
+    console.log('setupMediaLocal')
     localStream.value = await getDefaultUserMedia()
     setTracksLocalToPc(localStream.value, pc.value)
   }
   const setupMediaRemote = () => {
+    console.log('setupMediaRemote')
     remoteStream.value = new MediaStream()
-    setOnTrackToPc(pc.value, remoteStream.value)
+    setOnTrackRemoteToPc(pc.value, remoteStream.value)
   }
   // 2. Create Offer
   const createOffer = async () => {
+    console.log('createOffer.')
     // Create offer
     const offerDescription = await pc.value.createOffer()
     await pc.value.setLocalDescription(offerDescription)
@@ -55,18 +58,22 @@ export const groupMeetApi = () => {
 
     // Get candidates for caller, save to db
     pc.value.onicecandidate = (event) => {
-      if (event.candidate) void saveOfferOffCall(callId.value, event.candidate.toJSON())
+      console.log('createOffer pc.onicecandidate', event)
+      if (event.candidate) {
+        console.log('createOffer pc.onicecandidate', event.candidate)
+        void saveOfferOffCall(callId.value, event.candidate.toJSON())
+      }
     }
 
     listenChangesOfCallId(callId.value, (newCallDoc) => {
+      console.log('listenChangesOfCallid')
       if (!pc.value.currentRemoteDescription && newCallDoc?.answer) {
-        console.log('Set remote description: ', newCallDoc.answer)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const answerDescription = new RTCSessionDescription(newCallDoc?.answer)
+        const answerDescription = new RTCSessionDescription(newCallDoc?.answer as RTCSessionDescriptionInit)
         void pc.value.setRemoteDescription(answerDescription)
       }
     })
     listenChangesOfAnswerOfCallId(callId.value, (candidate) => {
+      console.log('listenChangesOfAnswerOfCallId')
       void pc.value.addIceCandidate(candidate)
     })
   }

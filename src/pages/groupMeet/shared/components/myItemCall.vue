@@ -13,6 +13,8 @@
       playsinline
       style="width: 100%;"
     />
+    {{ streamVideo.getVideoTracks() }}
+
     <audio
       v-show="false"
       ref="audioDoc"
@@ -23,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, onMounted, watch, nextTick } from 'vue'
+import { defineComponent, PropType, ref, watch, onMounted } from 'vue'
 export default defineComponent({
   inheritAttrs: false,
   name: 'MyItemCall',
@@ -54,15 +56,11 @@ export default defineComponent({
       }
     })
 
-    watch(() => props.streamVideo, () => {
-      if (videoDoc.value) {
-        if (props.streamVideo) {
-          console.log('Cambia en mi item call', props.streamVideo)
-          videoDoc.value.srcObject = props.streamVideo
-          void nextTick(() => {
-            void videoDoc?.value?.play()
-          })
-        }
+    watch(() => props.streamVideo, (newVal) => {
+      console.log('watch my item call', newVal, videoDoc.value)
+      if (newVal && videoDoc.value) {
+        console.log('Cambia en mi item call', props.streamVideo)
+        videoDoc.value.srcObject = props.streamVideo
       }
     }, {
       deep: true,

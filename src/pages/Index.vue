@@ -22,7 +22,7 @@
 <script lang="ts">
 
 import { defineComponent, onMounted, ref } from 'vue'
-import { getConnectedDevices, openShareMonitor } from './groupMeet/controllerMedia'
+import { getConnectedDevices, openShareMonitor } from './groupMeet/shared/components/controllerMedia'
 
 export default defineComponent({
   name: 'PageIndex',

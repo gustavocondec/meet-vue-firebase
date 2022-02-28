@@ -24,7 +24,7 @@
 <script lang="ts">
 import { useRoute } from 'vue-router'
 import { defineComponent, onMounted } from 'vue'
-import { groupMeetApi } from 'pages/groupMeet/api-composition'
+import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
 import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 import { existCallId } from 'pages/groupMeet/groupMeet-services'
