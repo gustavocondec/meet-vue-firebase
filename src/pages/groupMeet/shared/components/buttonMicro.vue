@@ -32,12 +32,35 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
+import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
 
 export default defineComponent({
   name: 'ButtonMicro',
   setup () {
-    const isActive = ref(false)
+    const isActive = ref(true)
+    const { localStream, pc } = groupMeetApi()
+    const senderAudio = pc.value.getSenders().find((sender) => sender?.track?.kind === 'audio')
+
+    watch(isActive, async (newValue) => {
+      if (!localStream.value) return
+      const audioTracks = localStream.value.getAudioTracks()
+      if (!audioTracks[0]) return
+      if (!senderAudio) return
+      if (newValue) {
+        const auxMediaDevices = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        const auxTrackAudio = auxMediaDevices.getAudioTracks()
+        console.log('set,', auxTrackAudio[0])
+        await senderAudio.replaceTrack(auxTrackAudio[0])
+      } else {
+        console.log('se null')
+        await senderAudio.replaceTrack(null)
+        if (senderAudio.track) {
+          senderAudio.track.enabled = false
+          senderAudio.track.stop()
+        }
+      }
+    })
 
     return {
       isActive

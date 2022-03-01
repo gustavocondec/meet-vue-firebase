@@ -41,7 +41,6 @@ export default defineComponent({
     const { localStream, pc } = groupMeetApi()
     const senderCamera = pc.value.getSenders().find((sender) => sender?.track?.kind === 'video')
 
-    // const backupAudioTrack:MediaStreamTrack
     watch(isActive, async (newValue) => {
       if (!localStream.value) return
       const videoTracks = localStream.value.getVideoTracks()
@@ -51,7 +50,9 @@ export default defineComponent({
         console.log('auxTrackCamera')
         const auxMediaDevices = await navigator.mediaDevices.getUserMedia({ audio: false, video: true })
         const auxTrackVideos = auxMediaDevices.getVideoTracks()
+        localStream.value.addTrack(auxTrackVideos[0])
         await senderCamera.replaceTrack(auxTrackVideos[0])
+        console.log('localstream', localStream.value.getTracks())
       } else {
         await senderCamera.replaceTrack(null)
         if (senderCamera.track) {

@@ -1,6 +1,7 @@
-export async function getConnectedDevices (type: 'audioinput' | 'audiooutput' | 'videoinput') {
+export async function getConnectedDevices (type?: 'audioinput' | 'audiooutput' | 'videoinput') {
   const devices = await navigator.mediaDevices.enumerateDevices()
-  return devices.filter(device => device.kind === type)
+  if (type) return devices.filter(device => device.kind === type)
+  else return devices
 }
 
 // Open camera with at least minWidth and minHeight capabilities
@@ -53,7 +54,10 @@ export async function openShareMonitor () {
 export const getDefaultUserMedia = async () => {
   const userMedia = await navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: false
+    audio: {
+      echoCancellation: true,
+      suppressLocalAudioPlayback: true
+    }
   })
   return userMedia
 }
