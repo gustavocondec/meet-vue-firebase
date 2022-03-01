@@ -17,6 +17,10 @@ export const groupMeetApi = () => {
   const $store = useStore()
   const pc = computed(() => $store.state.groupMeetModule.pc)
 
+  pc.value.onconnectionstatechange = (event) => {
+    console.log('pc.onconnectionstatechange', event)
+  }
+
   // Global State
   const localStream = computed({
     get: () => $store.state.groupMeetModule.localStream,
@@ -116,12 +120,18 @@ export const groupMeetApi = () => {
   const setTracksLocalToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
     if (!stream) return
     console.log('setTracksLocalToPc')
+    // const videoTrack = stream.getVideoTracks()
+    // if (videoTrack.length >= 1) {
+    //   void cameraSender.replaceTrack(videoTrack[0])
+    // }
+    //
+    // const audioTrack = stream.getAudioTracks()
+    // if (audioTrack.length >= 1) void audioSender.replaceTrack(audioTrack[0])
+
     stream.getTracks().forEach((track) => {
-      console.log('setTracksLocalToPc', track)
       pc.addTrack(track, stream)
     })
   }
-
   return {
     pc,
     callId,

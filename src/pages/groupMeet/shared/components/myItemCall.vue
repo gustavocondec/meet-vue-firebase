@@ -52,14 +52,11 @@ export default defineComponent({
 
     onMounted(() => {
       if (videoDoc.value) {
-        console.log('setea en onmounted')
         videoDoc.value.srcObject = streamVideo.value
       }
     })
     watch(streamVideo, (newVal) => {
-      console.log('watch my item call', newVal, videoDoc.value)
-      if (newVal && videoDoc.value) {
-        console.log('Cambia en mi item call', streamVideo.value)
+      if (videoDoc.value) {
         videoDoc.value.srcObject = streamVideo.value
       }
     }, {

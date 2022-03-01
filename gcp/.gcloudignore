@@ -16,3 +16,4 @@
 # Node.js dependencies: prueba
 node_modules/
 app.yaml
+.env
