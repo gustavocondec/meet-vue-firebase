@@ -13,7 +13,7 @@
       playsinline
       style="width: 100%;"
     />
-    {{ streamVideo.getVideoTracks() }}
+    {{ streamVideo?.getVideoTracks() }}
 
     <audio
       v-show="false"
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch, onMounted } from 'vue'
+import { defineComponent, PropType, ref, toRefs, watch, onMounted } from 'vue'
 export default defineComponent({
   inheritAttrs: false,
   name: 'MyItemCall',
@@ -48,36 +48,36 @@ export default defineComponent({
   setup (props) {
     const videoDoc = ref<HTMLVideoElement | null>(null)
     const audioDoc = ref<HTMLAudioElement | null>(null)
+    const { streamVideo } = toRefs(props)
 
     onMounted(() => {
       if (videoDoc.value) {
         console.log('setea en onmounted')
-        videoDoc.value.srcObject = props.streamVideo
+        videoDoc.value.srcObject = streamVideo.value
       }
     })
-
-    watch(() => props.streamVideo, (newVal) => {
+    watch(streamVideo, (newVal) => {
       console.log('watch my item call', newVal, videoDoc.value)
       if (newVal && videoDoc.value) {
-        console.log('Cambia en mi item call', props.streamVideo)
-        videoDoc.value.srcObject = props.streamVideo
+        console.log('Cambia en mi item call', streamVideo.value)
+        videoDoc.value.srcObject = streamVideo.value
       }
     }, {
       deep: true,
       immediate: true
     })
 
-    watch(() => props.streamAudio, () => {
-      if (audioDoc.value) {
-        if (props.streamAudio) {
-          audioDoc.value.srcObject = props.streamAudio
-        }
-      }
-    },
-    {
-      deep: true,
-      immediate: true
-    })
+    // watch(() => props.streamAudio, () => {
+    //   if (audioDoc.value) {
+    //     if (props.streamAudio) {
+    //       audioDoc.value.srcObject = props.streamAudio
+    //     }
+    //   }
+    // },
+    // {
+    //   deep: true,
+    //   immediate: true
+    // })
 
     return {
       videoDoc,

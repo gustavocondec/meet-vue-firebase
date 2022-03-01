@@ -23,11 +23,12 @@
 
 <script lang="ts">
 import { useRoute } from 'vue-router'
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent, onBeforeMount } from 'vue'
 import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
 import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 import { existCallId } from 'pages/groupMeet/groupMeet-services'
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: 'PageMeet',
@@ -36,9 +37,12 @@ export default defineComponent({
   setup () {
     const { localStream, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
     const $route = useRoute()
-    onMounted(async () => {
+    const $quasar = useQuasar()
+    onBeforeMount(async () => {
+      console.log('onbefore mount meet')
       if (!callId.value) {
         callId.value = String($route.params.callId)
+        if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
         if (await existCallId(callId.value)) {
           await setupMediaLocal()
           setupMediaRemote()
