@@ -14,7 +14,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{
       path: '',
-      component: () => import('pages/home/home.vue')
+      component: () => import('pages/home/home.vue'),
+      name: 'home'
     }]
   },
   {
@@ -22,7 +23,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{
       path: '',
-      component: () => import('pages/groupMeet/preMeet/preMeet.vue')
+      component: () => import('pages/groupMeet/preMeet/preMeet.vue'),
+      name: 'premeet'
     }]
   },
   {
@@ -30,7 +32,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{
       path: '',
-      component: () => import('pages/groupMeet/meet/meet.vue')
+      component: () => import('pages/groupMeet/meet/meet.vue'),
+      name: 'meet'
     }]
   },
   // Always leave this as last one,

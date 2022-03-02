@@ -28,6 +28,11 @@ const mutations: MutationTree<groupMeetStateInterface> = {
   },
   setCallId (state, payload: string) {
     state.callId = payload
+  },
+  restart (state) {
+    state.pc = new RTCPeerConnection(servers)
+    state.callId = ''
+    state.remoteStream = null
   }
 }
 

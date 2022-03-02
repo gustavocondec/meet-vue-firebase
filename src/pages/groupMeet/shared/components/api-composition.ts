@@ -5,7 +5,7 @@ import {
   saveNewCall,
   saveOfferOffCall, updateCallById
 } from 'pages/groupMeet/groupMeet-services'
-import { computed, ref } from 'vue'
+import { computed, ref, onBeforeUnmount } from 'vue'
 import { useStore } from 'src/store'
 import { ControllerMedia } from 'pages/groupMeet/shared/ControllerMedia'
 
@@ -126,6 +126,9 @@ export const groupMeetApi = () => {
       pc.addTrack(track, stream)
     })
   }
+  onBeforeUnmount(() => {
+    console.log('unbeforemounted')
+  })
   return {
     controllerMedia,
     pc,

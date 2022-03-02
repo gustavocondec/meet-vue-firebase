@@ -52,11 +52,18 @@ export default defineComponent({
      * @description Create a offer
      * */
     const createRoom = async () => {
-      isLoadingCreate.value = true
-      await setupMediaLocal()
-      setupMediaRemote()
-      await createOffer()
-      await $router.push('/' + callId.value)
+      try {
+        isLoadingCreate.value = true
+        await setupMediaLocal()
+        setupMediaRemote()
+        await createOffer()
+        await $router.push('/' + callId.value)
+      } catch (e) {
+        q.notify({ type: 'negative', message: String(e) })
+      } finally {
+        isLoadingCreate.value = false
+        q.notify({ type: 'positive', message: 'Se creo sala.' })
+      }
     }
 
     const joinCode = async () => {
@@ -70,6 +77,7 @@ export default defineComponent({
       } catch (e) {
         q.notify({ color: 'red', message: `Ocurrio un error: ${String(e)}` })
       } finally {
+        q.notify({ type: 'positive', message: 'Te uniste a la sala.' })
         isLoadingJoin.value = false
       }
     }
