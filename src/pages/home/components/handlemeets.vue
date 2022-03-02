@@ -39,15 +39,17 @@ import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
 import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
 import { existCallId } from 'pages/groupMeet/groupMeet-services'
+import { useStore } from 'src/store'
 
 export default defineComponent({
   name: 'HandleMeets',
   setup () {
     const $router = useRouter()
     const q = useQuasar()
+    const $store = useStore()
     const isLoadingCreate = ref(false)
     const isLoadingJoin = ref(false)
-    const { createOffer, answerButton, callId, setupMediaRemote, setupMediaLocal } = groupMeetApi()
+    const { createOffer, answerButton, callId, setupMediaLocal, setupMediaRemote } = groupMeetApi()
     /**
      * @description Create a offer
      * */
@@ -57,6 +59,7 @@ export default defineComponent({
         await setupMediaLocal()
         setupMediaRemote()
         await createOffer()
+        $store.commit('groupMeetModule/setRole', 'offer')
         await $router.push('/' + callId.value)
       } catch (e) {
         q.notify({ type: 'negative', message: String(e) })
@@ -73,6 +76,7 @@ export default defineComponent({
         await setupMediaLocal()
         setupMediaRemote()
         await answerButton()
+        $store.commit('groupMeetModule/setRole', 'answer')
         await $router.push('/' + callId.value)
       } catch (e) {
         q.notify({ color: 'red', message: `Ocurrio un error: ${String(e)}` })

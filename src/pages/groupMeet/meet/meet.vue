@@ -1,23 +1,18 @@
 <template>
-  <div style="background: blanchedalmond">
-    <div class="meet-container">
-      <div class="meet-container__central">
-        <p>Local</p>
+  <div class="meet-page">
+    <div class="meet-page__container">
+      <div class="meet-page__container__central">
         <my-item-call
           :stream-video="controllerMedia.mediaStream"
         />
       </div>
-      <div
-        class="meet-container__float"
-      >
-        <p>Remote</p>
+      <div class="meet-page__container__float">
         <my-item-call
           :stream-video="remoteStream"
         />
       </div>
     </div>
-    <p>{{ callId }}</p>
-    <meet-buttons-bottom />
+    <meet-buttons-bottom class="meet-page__buttons" />
   </div>
 </template>
 
@@ -29,26 +24,38 @@ import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 import { existCallId } from 'pages/groupMeet/groupMeet-services'
 import { useQuasar } from 'quasar'
+import { useStore } from 'src/store'
 
 export default defineComponent({
   name: 'PageMeet',
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { controllerMedia, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+    const { pc, controllerMedia, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
     const $route = useRoute()
     const $quasar = useQuasar()
+    const $store = useStore()
     onBeforeMount(async () => {
       console.log('onbefore mount meet')
-      if (!callId.value) {
-        callId.value = String($route.params.callId)
-        if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
-        if (await existCallId(callId.value)) {
-          await setupMediaLocal()
-          setupMediaRemote()
-          await answerButton()
-        } else {
-          console.info('No existe calls con ese Id')
+      switch ($store.state.groupMeetModule.role) {
+        case 'answer': {
+          break
+        }
+        case 'offer': {
+          break
+        }
+        default: {
+          callId.value = String($route.params.callId)
+          if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
+          if (await existCallId(callId.value)) {
+            await setupMediaLocal()
+            setupMediaRemote()
+            await answerButton()
+            console.log('senders', pc.value.getSenders())
+          } else {
+            console.info('No existe calls con ese Id')
+          }
+          break
         }
       }
     })
@@ -63,13 +70,32 @@ export default defineComponent({
 </script>
 
 <style scoped lang="sass">
-.meet-container
-  width: 100%
+.meet-page
+  background-color: black
+  min-height: 95vh
+  height: 95vh
   display: flex
-  flex-direction: row
-  &__central
-    width: 50%
-  &__float
-    width: 50%
+  flex-direction: column
+  &__container
+    width: 100%
+    height: 100%
+    position: relative
+    &__central
+      display: flex
+      flex-direction: row
+      justify-content: center
+      align-items: center
+      align-content: center
+      width: 100%
+      height: 100%
+      padding-left: 2%
+      padding-right: 2%
+    &__float
+      position: absolute
+      width: 15%
+      bottom: 0%
+      right: 3%
+
+  &__buttons
 
 </style>

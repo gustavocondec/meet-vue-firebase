@@ -2,7 +2,7 @@
   <div class="container-buttons">
     <micro class="container-buttons__button" />
     <camera class="container-buttons__button" />
-    <button-share-pantalla />
+    <button-share-pantalla v-show="false" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ export default defineComponent({
 
 <style lang="sass" scoped>
 .container-buttons
+  width: 100%
   padding: 15px 2%
   display: flex
   flex-direction: row
