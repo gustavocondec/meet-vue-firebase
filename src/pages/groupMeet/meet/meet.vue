@@ -4,7 +4,7 @@
       <div class="meet-container__central">
         <p>Local</p>
         <my-item-call
-          :stream-video="localStream"
+          :stream-video="controllerMedia.mediaStream"
         />
       </div>
       <div
@@ -35,7 +35,7 @@ export default defineComponent({
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { localStream, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+    const { controllerMedia, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
     const $route = useRoute()
     const $quasar = useQuasar()
     onBeforeMount(async () => {
@@ -54,7 +54,7 @@ export default defineComponent({
     })
 
     return {
-      localStream,
+      controllerMedia,
       remoteStream,
       callId
     }

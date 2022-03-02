@@ -39,26 +39,18 @@ export default defineComponent({
   name: 'ButtonMicro',
   setup () {
     const isActive = ref(true)
-    const { localStream, pc } = groupMeetApi()
+    const { pc, controllerMedia } = groupMeetApi()
     const senderAudio = pc.value.getSenders().find((sender) => sender?.track?.kind === 'audio')
 
     watch(isActive, async (newValue) => {
-      if (!localStream.value) return
-      const audioTracks = localStream.value.getAudioTracks()
-      if (!audioTracks[0]) return
       if (!senderAudio) return
       if (newValue) {
-        const auxMediaDevices = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-        const auxTrackAudio = auxMediaDevices.getAudioTracks()
-        console.log('set,', auxTrackAudio[0])
-        await senderAudio.replaceTrack(auxTrackAudio[0])
+        await controllerMedia.value.openAudio()
+        await senderAudio.replaceTrack(controllerMedia.value.mediaStreamTrackAudio)
       } else {
         console.log('se null')
         await senderAudio.replaceTrack(null)
-        if (senderAudio.track) {
-          senderAudio.track.enabled = false
-          senderAudio.track.stop()
-        }
+        controllerMedia.value.removeTrackAudio()
       }
     })
 

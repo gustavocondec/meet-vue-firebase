@@ -19,7 +19,6 @@ export const groupMeetApi = () => {
   const controllerMedia = ref(ControllerMedia.getInstance())
 
   // Global State
-  const localStream = computed(() => controllerMedia.value.mediaStream)
   const remoteStream = computed({
     get: () => $store.state.groupMeetModule.remoteStream,
     set: (value) => $store.commit('groupMeetModule/setRemoteStream', value)
@@ -31,9 +30,9 @@ export const groupMeetApi = () => {
   }
   const setupMediaLocal = async () => {
     console.log('setupMediaLocal')
-    // localStream.value = await getDefaultUserMedia()
     await controllerMedia.value.openCamera()
-    setTracksLocalToPc(localStream.value, pc.value)
+    await controllerMedia.value.openAudio()
+    setTracksLocalToPc(controllerMedia.value.mediaStream, pc.value)
   }
   const setupMediaRemote = () => {
     console.log('setupMediaRemote')
@@ -136,7 +135,6 @@ export const groupMeetApi = () => {
     setupMediaRemote,
     createOffer,
     answerButton,
-    localStream,
     remoteStream
   }
 }

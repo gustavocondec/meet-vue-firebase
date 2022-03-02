@@ -38,27 +38,21 @@ export default defineComponent({
   name: 'ButtonCamera',
   setup () {
     const isActive = ref(true)
-    const { localStream, pc } = groupMeetApi()
+    const { pc, controllerMedia } = groupMeetApi()
     const senderCamera = pc.value.getSenders().find((sender) => sender?.track?.kind === 'video')
 
     watch(isActive, async (newValue) => {
-      if (!localStream.value) return
-      const videoTracks = localStream.value.getVideoTracks()
-      if (!videoTracks[0]) return
       if (!senderCamera) return
       if (newValue) {
         console.log('auxTrackCamera')
-        const auxMediaDevices = await navigator.mediaDevices.getUserMedia({ audio: false, video: true })
-        const auxTrackVideos = auxMediaDevices.getVideoTracks()
-        localStream.value.addTrack(auxTrackVideos[0])
-        await senderCamera.replaceTrack(auxTrackVideos[0])
-        console.log('localstream', localStream.value.getTracks())
+        await controllerMedia.value.openCamera()
+        await senderCamera.replaceTrack(controllerMedia.value.mediaStreamTrackVideo)
       } else {
         await senderCamera.replaceTrack(null)
-        if (senderCamera.track) {
-          senderCamera.track.enabled = false
-          senderCamera.track.stop()
-        }
+        if (!controllerMedia.value.mediaStreamTrackVideo) return
+        controllerMedia.value.mediaStreamTrackVideo.enabled = false
+        controllerMedia.value.mediaStreamTrackVideo.stop()
+        controllerMedia.value.removeTrackVideo()
       }
     })
     return {
