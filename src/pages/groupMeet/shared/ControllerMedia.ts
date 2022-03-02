@@ -1,9 +1,18 @@
 export class ControllerMedia {
+  // eslint-disable-next-line no-use-before-define
+  static instance: ControllerMedia
   mediaStream
   private _mediaStreamTrackVideo: MediaStreamTrack|null = null
   private _mediaStreamTrackAudio: MediaStreamTrack|null = null
   constructor () {
     this.mediaStream = new MediaStream()
+  }
+
+  public static getInstance ():ControllerMedia {
+    if (!ControllerMedia.instance) {
+      ControllerMedia.instance = new ControllerMedia()
+    }
+    return ControllerMedia.instance
   }
 
   async openCamera () {

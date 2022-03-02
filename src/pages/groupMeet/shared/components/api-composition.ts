@@ -5,9 +5,9 @@ import {
   saveNewCall,
   saveOfferOffCall, updateCallById
 } from 'pages/groupMeet/groupMeet-services'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'src/store'
-import { getDefaultUserMedia } from 'pages/groupMeet/shared/components/controllerMedia'
+import { ControllerMedia } from 'pages/groupMeet/shared/ControllerMedia'
 
 export const groupMeetApi = () => {
   const callId = computed({
@@ -16,16 +16,10 @@ export const groupMeetApi = () => {
   })
   const $store = useStore()
   const pc = computed(() => $store.state.groupMeetModule.pc)
-
-  pc.value.onconnectionstatechange = (event) => {
-    console.log('pc.onconnectionstatechange', event)
-  }
+  const controllerMedia = ref(ControllerMedia.getInstance())
 
   // Global State
-  const localStream = computed({
-    get: () => $store.state.groupMeetModule.localStream,
-    set: (value) => $store.commit('groupMeetModule/setLocalStream', value)
-  })
+  const localStream = computed(() => controllerMedia.value.mediaStream)
   const remoteStream = computed({
     get: () => $store.state.groupMeetModule.remoteStream,
     set: (value) => $store.commit('groupMeetModule/setRemoteStream', value)
@@ -37,7 +31,8 @@ export const groupMeetApi = () => {
   }
   const setupMediaLocal = async () => {
     console.log('setupMediaLocal')
-    localStream.value = await getDefaultUserMedia()
+    // localStream.value = await getDefaultUserMedia()
+    await controllerMedia.value.openCamera()
     setTracksLocalToPc(localStream.value, pc.value)
   }
   const setupMediaRemote = () => {
@@ -133,6 +128,7 @@ export const groupMeetApi = () => {
     })
   }
   return {
+    controllerMedia,
     pc,
     callId,
     setupMediaSources,
