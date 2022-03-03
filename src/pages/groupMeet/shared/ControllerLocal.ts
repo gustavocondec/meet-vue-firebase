@@ -1,7 +1,7 @@
 export class ControllerLocal {
   // eslint-disable-next-line no-use-before-define
   static instance: ControllerLocal
-  readonly mediaStream
+  readonly mediaStream:MediaStream
   private _mediaStreamTrackVideo: MediaStreamTrack|null = null
   private _mediaStreamTrackAudio: MediaStreamTrack|null = null
   constructor () {

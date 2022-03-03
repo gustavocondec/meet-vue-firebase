@@ -1,7 +1,7 @@
 export class ControllerRemote {
   // eslint-disable-next-line no-use-before-define
   static instance: ControllerRemote
-  readonly mediaStream
+  readonly mediaStream: MediaStream
   private _mediaStreamTrackVideo: MediaStreamTrack|null = null
   private _mediaStreamTrackAudio: MediaStreamTrack|null = null
   constructor () {

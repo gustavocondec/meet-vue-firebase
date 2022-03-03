@@ -61,11 +61,11 @@ export default defineComponent({
         await createOffer()
         $store.commit('groupMeetModule/setRole', 'offer')
         await $router.push('/' + callId.value)
+        q.notify({ type: 'positive', message: 'Se creo sala.' })
       } catch (e) {
         q.notify({ type: 'negative', message: String(e) })
       } finally {
         isLoadingCreate.value = false
-        q.notify({ type: 'positive', message: 'Se creo sala.' })
       }
     }
 
@@ -78,10 +78,10 @@ export default defineComponent({
         await answerButton()
         $store.commit('groupMeetModule/setRole', 'answer')
         await $router.push('/' + callId.value)
+        q.notify({ type: 'positive', message: 'Te uniste a la sala.' })
       } catch (e) {
         q.notify({ color: 'red', message: `Ocurrio un error: ${String(e)}` })
       } finally {
-        q.notify({ type: 'positive', message: 'Te uniste a la sala.' })
         isLoadingJoin.value = false
       }
     }
