@@ -7,7 +7,7 @@ import {
 } from 'pages/groupMeet/groupMeet-services'
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useStore } from 'src/store'
-import { ControllerMedia } from 'pages/groupMeet/shared/ControllerMedia'
+import { ControllerLocal } from 'pages/groupMeet/shared/ControllerLocal'
 import { ControllerRemote } from 'pages/groupMeet/shared/ControllerRemote'
 
 export const groupMeetApi = () => {
@@ -17,7 +17,7 @@ export const groupMeetApi = () => {
   })
   const $store = useStore()
   const pc = computed(() => $store.state.groupMeetModule.pc)
-  const controllerMedia = ref(ControllerMedia.getInstance())
+  const controllerLocal = ref(ControllerLocal.getInstance())
   const controllerMediaRemote = ref(ControllerRemote.getInstance())
   // Global State
 
@@ -28,13 +28,12 @@ export const groupMeetApi = () => {
   }
   const setupMediaLocal = async () => {
     console.log('setupMediaLocal')
-    await controllerMedia.value.openCamera()
-    await controllerMedia.value.openAudio()
-    setTracksLocalToPc(controllerMedia.value.mediaStream, pc.value)
+    await controllerLocal.value.openCamera()
+    await controllerLocal.value.openAudio()
+    setTracksLocalToPc(controllerLocal.value.mediaStream, pc.value)
   }
   const setupMediaRemote = () => {
     console.log('setupMediaRemote')
-    // remoteStream.value = new MediaStream()
     setOnTrackRemoteToPc(pc.value, controllerMediaRemote.value.mediaStream)
   }
   // 2. Create Offer
@@ -100,13 +99,16 @@ export const groupMeetApi = () => {
   }
 
   const setOnTrackRemoteToPc = (pc:RTCPeerConnection, stream: MediaStream|undefined) => {
-    console.log('setOnTrackRemoteToPc')
+    console.log('setOnTrackRemoteToPc-----------------------------------Start')
+    console.log('setOnTrackRemoteToPc-----------------------------------End', stream?.getTracks())
     pc.ontrack = (event) => {
       console.log('setOnTrackRemoteToPc', 'se activa evento pc.onTrack', event)
-      event.streams[0].getTracks().forEach((track) => {
-        console.log('setOnTrackRemoteToPc', 'añade track', track)
-        stream?.addTrack(track)
-      })
+      // event.streams[0].getTracks().forEach((track) => {
+      //   console.log('setOnTrackRemoteToPc', 'añade track', track)
+      //   stream?.addTrack(track)
+      // })
+      controllerMediaRemote.value.setMediaStream(event.streams[0])
+      console.log('setOnTrackRemoteToPc-----------------------------------End', stream?.getTracks())
     }
   }
   const setTracksLocalToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
@@ -128,7 +130,7 @@ export const groupMeetApi = () => {
     console.log('unbeforemounted')
   })
   return {
-    controllerMedia,
+    controllerLocal,
     controllerMediaRemote,
     pc,
     callId,

@@ -19,7 +19,7 @@
 <script lang="ts">
 import { useRoute } from 'vue-router'
 import { defineComponent, onBeforeMount, computed } from 'vue'
-import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
+import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
 import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 import { existCallId } from 'pages/groupMeet/groupMeet-services'
@@ -31,15 +31,15 @@ export default defineComponent({
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { pc, controllerMedia, controllerMediaRemote, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+    const { pc, controllerLocal, controllerMediaRemote, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
     const $route = useRoute()
     const $quasar = useQuasar()
     const $store = useStore()
 
     const mediaStreamVideo = computed(() => {
-      if (controllerMedia.value.mediaStreamTrackVideo) {
+      if (controllerLocal.value.mediaStreamTrackVideo) {
         const mediaAux = new MediaStream()
-        mediaAux.addTrack(controllerMedia.value.mediaStreamTrackVideo)
+        mediaAux.addTrack(controllerLocal.value.mediaStreamTrackVideo)
         return mediaAux
       } else return null
     })
@@ -71,7 +71,7 @@ export default defineComponent({
 
     return {
       mediaStreamVideo,
-      controllerMedia,
+      controllerLocal,
       controllerMediaRemote,
       callId
     }

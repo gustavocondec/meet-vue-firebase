@@ -1,18 +1,18 @@
-export class ControllerMedia {
+export class ControllerLocal {
   // eslint-disable-next-line no-use-before-define
-  static instance: ControllerMedia
-  mediaStream
+  static instance: ControllerLocal
+  readonly mediaStream
   private _mediaStreamTrackVideo: MediaStreamTrack|null = null
   private _mediaStreamTrackAudio: MediaStreamTrack|null = null
   constructor () {
     this.mediaStream = new MediaStream()
   }
 
-  public static getInstance ():ControllerMedia {
-    if (!ControllerMedia.instance) {
-      ControllerMedia.instance = new ControllerMedia()
+  public static getInstance ():ControllerLocal {
+    if (!ControllerLocal.instance) {
+      ControllerLocal.instance = new ControllerLocal()
     }
-    return ControllerMedia.instance
+    return ControllerLocal.instance
   }
 
   async getConnectedDevices (type?: 'audioinput' | 'audiooutput' | 'videoinput') {

@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
-import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
+import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
 import IconMicrophone from 'components/icons/iconMicrophone.vue'
 
 export default defineComponent({
@@ -17,18 +17,18 @@ export default defineComponent({
   components: { IconMicrophone },
   setup () {
     const isActive = ref(true)
-    const { pc, controllerMedia } = groupMeetApi()
+    const { pc, controllerLocal } = groupMeetApi()
     const senderAudio = pc.value.getSenders().find((sender) => sender?.track?.kind === 'audio')
 
     watch(isActive, async (newValue) => {
       if (!senderAudio) return
       if (newValue) {
-        await controllerMedia.value.openAudio()
-        await senderAudio.replaceTrack(controllerMedia.value.mediaStreamTrackAudio)
+        await controllerLocal.value.openAudio()
+        await senderAudio.replaceTrack(controllerLocal.value.mediaStreamTrackAudio)
       } else {
         console.log('se null')
         await senderAudio.replaceTrack(null)
-        controllerMedia.value.removeTrackAudio()
+        controllerLocal.value.removeTrackAudio()
       }
     })
 

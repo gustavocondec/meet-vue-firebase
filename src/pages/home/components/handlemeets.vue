@@ -37,7 +37,7 @@
 import { useRouter } from 'vue-router'
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
-import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
+import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
 import { existCallId } from 'pages/groupMeet/groupMeet-services'
 import { useStore } from 'src/store'
 

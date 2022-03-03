@@ -32,27 +32,27 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
-import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
+import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
 
 export default defineComponent({
   name: 'ButtonCamera',
   setup () {
     const isActive = ref(true)
-    const { pc, controllerMedia } = groupMeetApi()
+    const { pc, controllerLocal } = groupMeetApi()
     const senderCamera = pc.value.getSenders().find((sender) => sender?.track?.kind === 'video')
 
     watch(isActive, async (newValue) => {
       if (!senderCamera) return
       if (newValue) {
         console.log('auxTrackCamera')
-        await controllerMedia.value.openCamera()
-        await senderCamera.replaceTrack(controllerMedia.value.mediaStreamTrackVideo)
+        await controllerLocal.value.openCamera()
+        await senderCamera.replaceTrack(controllerLocal.value.mediaStreamTrackVideo)
       } else {
         await senderCamera.replaceTrack(null)
-        if (!controllerMedia.value.mediaStreamTrackVideo) return
-        controllerMedia.value.mediaStreamTrackVideo.enabled = false
-        controllerMedia.value.mediaStreamTrackVideo.stop()
-        controllerMedia.value.removeTrackVideo()
+        if (!controllerLocal.value.mediaStreamTrackVideo) return
+        controllerLocal.value.mediaStreamTrackVideo.enabled = false
+        controllerLocal.value.mediaStreamTrackVideo.stop()
+        controllerLocal.value.removeTrackVideo()
       }
     })
     return {
