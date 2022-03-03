@@ -57,6 +57,7 @@ export default defineComponent({
     },
     name: {
       type: String,
+      required: true,
       default: 'Tú'
     },
     type: {
@@ -73,9 +74,10 @@ export default defineComponent({
     const videoIsActive = ref(false)
     const { streamVideo, streamAudio } = toRefs(props)
     onMounted(() => {
-      if (videoDoc.value) {
+      if (videoDoc.value && audioDoc.value) {
         console.log('onMounter myItemCall', streamVideo.value)
         videoDoc.value.srcObject = streamVideo.value
+        audioDoc.value.srcObject = streamAudio.value
         videoIsActive.value = !!streamVideo.value
         audioIsActive.value = !!streamAudio.value
       }
@@ -85,7 +87,6 @@ export default defineComponent({
       videoIsActive.value = !!newVal
       if (videoDoc.value) {
         videoDoc.value.srcObject = streamVideo.value
-        videoIsActive.value = !!newVal
       }
     }, {
       deep: true,

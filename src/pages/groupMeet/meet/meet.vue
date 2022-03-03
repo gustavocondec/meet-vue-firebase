@@ -4,12 +4,6 @@
       class="meet-page__container"
       style="color: white"
     >
-      <p>{{ pc.getSenders() }}</p>
-      <p>{{ pc.getReceivers() }}</p>
-      <p>{{ pc.getTransceivers() }}</p>
-      <p>{{ controllerLocal.mediaStream.getTracks() }}</p>
-      <p>{{ controllerMediaRemote.mediaStream.getTracks() }}</p>
-      <p />
       <div class="meet-page__container__central">
         <my-item-call
           :stream-video="mediaStreamRemoteVideo"
