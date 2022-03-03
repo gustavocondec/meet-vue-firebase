@@ -3,12 +3,16 @@
     <div class="meet-page__container">
       <div class="meet-page__container__central">
         <my-item-call
-          :stream-video="mediaStreamVideo"
+          :stream-video="mediaStreamLocalVideo"
+          :stream-audio="mediaStreamLocalAudio"
+          type="local"
         />
       </div>
       <div class="meet-page__container__float">
         <my-item-call
-          :stream-video="controllerMediaRemote.mediaStream"
+          :stream-video="mediaStreamRemoteVideo"
+          :stream-audio="mediaStreamRemoteAudio"
+          type="remote"
         />
       </div>
     </div>
@@ -36,10 +40,31 @@ export default defineComponent({
     const $quasar = useQuasar()
     const $store = useStore()
 
-    const mediaStreamVideo = computed(() => {
+    const mediaStreamLocalVideo = computed(() => {
       if (controllerLocal.value.mediaStreamTrackVideo) {
         const mediaAux = new MediaStream()
         mediaAux.addTrack(controllerLocal.value.mediaStreamTrackVideo)
+        return mediaAux
+      } else return null
+    })
+    const mediaStreamLocalAudio = computed(() => {
+      if (controllerLocal.value.mediaStreamTrackAudio) {
+        const mediaAux = new MediaStream()
+        mediaAux.addTrack(controllerLocal.value.mediaStreamTrackAudio)
+        return mediaAux
+      } else return null
+    })
+    const mediaStreamRemoteVideo = computed(() => {
+      if (controllerMediaRemote.value.mediaStreamTrackVideo) {
+        const mediaAux = new MediaStream()
+        mediaAux.addTrack(controllerMediaRemote.value.mediaStreamTrackVideo)
+        return mediaAux
+      } else return null
+    })
+    const mediaStreamRemoteAudio = computed(() => {
+      if (controllerMediaRemote.value.mediaStreamTrackAudio) {
+        const mediaAux = new MediaStream()
+        mediaAux.addTrack(controllerMediaRemote.value.mediaStreamTrackAudio)
         return mediaAux
       } else return null
     })
@@ -70,7 +95,10 @@ export default defineComponent({
     })
 
     return {
-      mediaStreamVideo,
+      mediaStreamRemoteVideo,
+      mediaStreamRemoteAudio,
+      mediaStreamLocalVideo,
+      mediaStreamLocalAudio,
       controllerLocal,
       controllerMediaRemote,
       callId

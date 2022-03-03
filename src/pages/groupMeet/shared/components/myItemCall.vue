@@ -16,6 +16,7 @@
         Sin video
       </div>
       <audio
+        v-if="type==='remote'"
         v-show="false"
         ref="audioDoc"
         autoplay
@@ -46,7 +47,7 @@ export default defineComponent({
   props: {
     streamAudio: {
       type: [Object, null] as PropType<MediaStream| null>,
-      required: true,
+      required: false,
       default: null
     },
     streamVideo: {
@@ -57,6 +58,12 @@ export default defineComponent({
     name: {
       type: String,
       default: 'Tú'
+    },
+    type: {
+      type: String as PropType<'local|remote'>,
+      default: 'remote',
+      required: true,
+      validator: (val:string) => ['remote', 'local'].includes(val)
     }
   },
   setup (props) {
@@ -87,9 +94,9 @@ export default defineComponent({
 
     watch(streamAudio, (newVal) => {
       console.log('Cambia streamAudio', newVal)
+      audioIsActive.value = !!streamAudio.value
       if (audioDoc.value) {
         audioDoc.value.srcObject = streamAudio.value
-        audioIsActive.value = !!streamAudio.value
       }
     },
     {
