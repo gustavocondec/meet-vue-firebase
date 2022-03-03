@@ -8,6 +8,7 @@ import {
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useStore } from 'src/store'
 import { ControllerMedia } from 'pages/groupMeet/shared/ControllerMedia'
+import { ControllerRemote } from 'pages/groupMeet/shared/ControllerRemote'
 
 export const groupMeetApi = () => {
   const callId = computed({
@@ -17,12 +18,9 @@ export const groupMeetApi = () => {
   const $store = useStore()
   const pc = computed(() => $store.state.groupMeetModule.pc)
   const controllerMedia = ref(ControllerMedia.getInstance())
-
+  const controllerMediaRemote = ref(ControllerRemote.getInstance())
   // Global State
-  const remoteStream = computed({
-    get: () => $store.state.groupMeetModule.remoteStream,
-    set: (value) => $store.commit('groupMeetModule/setRemoteStream', value)
-  })
+
   // 1. Setup media sources
   const setupMediaSources = async () => {
     await setupMediaLocal()
@@ -36,8 +34,8 @@ export const groupMeetApi = () => {
   }
   const setupMediaRemote = () => {
     console.log('setupMediaRemote')
-    remoteStream.value = new MediaStream()
-    setOnTrackRemoteToPc(pc.value, remoteStream.value)
+    // remoteStream.value = new MediaStream()
+    setOnTrackRemoteToPc(pc.value, controllerMediaRemote.value.mediaStream)
   }
   // 2. Create Offer
   const createOffer = async () => {
@@ -101,13 +99,13 @@ export const groupMeetApi = () => {
     })
   }
 
-  const setOnTrackRemoteToPc = (pc:RTCPeerConnection, remoteStream: MediaStream|undefined) => {
+  const setOnTrackRemoteToPc = (pc:RTCPeerConnection, stream: MediaStream|undefined) => {
     console.log('setOnTrackRemoteToPc')
     pc.ontrack = (event) => {
       console.log('setOnTrackRemoteToPc', 'se activa evento pc.onTrack', event)
       event.streams[0].getTracks().forEach((track) => {
         console.log('setOnTrackRemoteToPc', 'añade track', track)
-        remoteStream?.addTrack(track)
+        stream?.addTrack(track)
       })
     }
   }
@@ -131,13 +129,13 @@ export const groupMeetApi = () => {
   })
   return {
     controllerMedia,
+    controllerMediaRemote,
     pc,
     callId,
     setupMediaSources,
     setupMediaLocal,
     setupMediaRemote,
     createOffer,
-    answerButton,
-    remoteStream
+    answerButton
   }
 }

@@ -29,7 +29,6 @@ export default defineComponent({
   display: flex
   flex-direction: row
   justify-content: center
-
   &__button
     margin-left: 10px
     margin-right: 10px

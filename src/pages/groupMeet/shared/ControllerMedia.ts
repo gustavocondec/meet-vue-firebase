@@ -22,7 +22,7 @@ export class ControllerMedia {
   }
 
   async openCamera () {
-    const auxMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    const auxMediaStream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 1.7777777778 }, audio: false })
     const videoTrack = auxMediaStream.getVideoTracks()
     if (!videoTrack[0]) throw new Error('Not Found Video Track')
     this.mediaStreamTrackVideo = videoTrack[0]

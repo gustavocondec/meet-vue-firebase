@@ -11,7 +11,6 @@ const servers = {
 export interface groupMeetStateInterface {
   pc: RTCPeerConnection,
   callId: string,
-  remoteStream: MediaStream | null,
   role:'offer'|'answer'|null
 }
 
@@ -19,7 +18,6 @@ function state (): groupMeetStateInterface {
   return {
     pc: new RTCPeerConnection(servers),
     callId: '',
-    remoteStream: null,
     role: null
   }
 }
@@ -28,16 +26,12 @@ const mutations: MutationTree<groupMeetStateInterface> = {
   setRole (state, payload: 'offer'|'answer'|null) {
     state.role = payload
   },
-  setRemoteStream (state, payload: MediaStream|null) {
-    state.remoteStream = payload
-  },
   setCallId (state, payload: string) {
     state.callId = payload
   },
   restart (state) {
     state.pc = new RTCPeerConnection(servers)
     state.callId = ''
-    state.remoteStream = null
   }
 }
 

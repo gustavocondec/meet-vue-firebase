@@ -1,11 +1,5 @@
 <template>
   <div class="my-item-call">
-    <p
-      class="name"
-      v-show="name"
-    >
-      {{ name }}
-    </p>
     <div class="container">
       <video
         class="container__video"
@@ -13,8 +7,14 @@
         autoplay
         :controls="false"
         playsinline
-        style="width: 100%;"
       />
+      <div
+        v-show="!
+          videoIsActive"
+        class="container__video--inactive"
+      >
+        Sin video
+      </div>
       <audio
         v-show="false"
         ref="audioDoc"
@@ -26,6 +26,12 @@
         :is-active="audioIsActive"
         type="icon"
       />
+      <p
+        class="container__name"
+        v-show="name"
+      >
+        {{ name }}
+      </p>
     </div>
   </div>
 </template>
@@ -57,36 +63,42 @@ export default defineComponent({
     const videoDoc = ref<HTMLVideoElement | null>(null)
     const audioDoc = ref<HTMLAudioElement | null>(null)
     const audioIsActive = ref(false)
-    const { streamVideo } = toRefs(props)
-
+    const videoIsActive = ref(false)
+    const { streamVideo, streamAudio } = toRefs(props)
     onMounted(() => {
       if (videoDoc.value) {
+        console.log('onMounter myItemCall', streamVideo.value)
         videoDoc.value.srcObject = streamVideo.value
+        videoIsActive.value = !!streamVideo.value
+        audioIsActive.value = !!streamAudio.value
       }
     })
     watch(streamVideo, (newVal) => {
       console.log('Cambia streamVideo', newVal)
+      videoIsActive.value = !!newVal
       if (videoDoc.value) {
         videoDoc.value.srcObject = streamVideo.value
+        videoIsActive.value = !!newVal
       }
     }, {
       deep: true,
       immediate: true
     })
 
-    // watch(() => props.streamAudio, () => {
-    //   if (audioDoc.value) {
-    //     if (props.streamAudio) {
-    //       audioDoc.value.srcObject = props.streamAudio
-    //     }
-    //   }
-    // },
-    // {
-    //   deep: true,
-    //   immediate: true
-    // })
+    watch(streamAudio, (newVal) => {
+      console.log('Cambia streamAudio', newVal)
+      if (audioDoc.value) {
+        audioDoc.value.srcObject = streamAudio.value
+        audioIsActive.value = !!streamAudio.value
+      }
+    },
+    {
+      deep: true,
+      immediate: true
+    })
 
     return {
+      videoIsActive,
       audioIsActive,
       videoDoc,
       audioDoc
@@ -97,16 +109,44 @@ export default defineComponent({
 
 <style lang="sass" scoped>
 .my-item-call
-  .name
+  width: 100%
+  height: 100%
+  max-height: 80vh
+  overflow: hidden
+.container
+  display: block
+  height: 100%
+  width: 100%
+  position: relative
+  &__video
+    width: 100% !important
+    height: auto !important
+    max-height: 100%
+    border-radius: 10px
+  &__icon-microphone
+    position: absolute
+    top: 1.5%
+    right: 1.5%
+  &__video--inactive
+    position: absolute
+    top: 0
+    left: 0
+    background: #4a4e51
     color: white
+    width: 100%
+    height: 100%
+    border-radius: 10px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    font-size: 20px
+  &__name
+    color: white
+    font-weight: bold
     padding-bottom: 0
     margin-bottom: 0
-  .container
-    position: relative
-    &__video
-      border-radius: 10px
-    &__icon-microphone
-      position: absolute
-      top: 1%
-      right: 1%
+    position: absolute
+    left: 1.5%
+    bottom: 1.5%
 </style>

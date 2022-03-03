@@ -3,12 +3,12 @@
     <div class="meet-page__container">
       <div class="meet-page__container__central">
         <my-item-call
-          :stream-video="controllerMedia.mediaStream"
+          :stream-video="mediaStreamVideo"
         />
       </div>
       <div class="meet-page__container__float">
         <my-item-call
-          :stream-video="remoteStream"
+          :stream-video="controllerMediaRemote.mediaStream"
         />
       </div>
     </div>
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { useRoute } from 'vue-router'
-import { defineComponent, onBeforeMount } from 'vue'
+import { defineComponent, onBeforeMount, computed } from 'vue'
 import { groupMeetApi } from 'pages/groupMeet/shared/components/api-composition'
 import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
@@ -31,10 +31,19 @@ export default defineComponent({
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { pc, controllerMedia, remoteStream, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+    const { pc, controllerMedia, controllerMediaRemote, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
     const $route = useRoute()
     const $quasar = useQuasar()
     const $store = useStore()
+
+    const mediaStreamVideo = computed(() => {
+      if (controllerMedia.value.mediaStreamTrackVideo) {
+        const mediaAux = new MediaStream()
+        mediaAux.addTrack(controllerMedia.value.mediaStreamTrackVideo)
+        return mediaAux
+      } else return null
+    })
+
     onBeforeMount(async () => {
       console.log('onbefore mount meet')
       switch ($store.state.groupMeetModule.role) {
@@ -61,8 +70,9 @@ export default defineComponent({
     })
 
     return {
+      mediaStreamVideo,
       controllerMedia,
-      remoteStream,
+      controllerMediaRemote,
       callId
     }
   }
@@ -71,31 +81,42 @@ export default defineComponent({
 
 <style scoped lang="sass">
 .meet-page
-  background-color: black
+  background-color: #202124
   min-height: 95vh
   height: 95vh
   display: flex
   flex-direction: column
   &__container
-    width: 100%
-    height: 100%
     position: relative
+    height: 90%
+    display: flex
+    flex-direction: column
+    justify-content: center
     &__central
-      display: flex
-      flex-direction: row
-      justify-content: center
-      align-items: center
-      align-content: center
       width: 100%
-      height: 100%
       padding-left: 2%
       padding-right: 2%
     &__float
       position: absolute
-      width: 15%
-      bottom: 0%
+      width: 35%
+      max-height: 25%
+      overflow: hidden
+      bottom: 0
       right: 3%
-
   &__buttons
-
+@media only screen and (min-width: 650px)
+  .meet-page
+    &__container
+      &__float
+        width: 25%
+@media only screen and (min-width: 1000px)
+  .meet-page
+    &__container
+      &__float
+        width: 20%
+@media only screen and (min-width: 1400px)
+  .meet-page
+    &__container
+      &__float
+        width: 15%
 </style>
