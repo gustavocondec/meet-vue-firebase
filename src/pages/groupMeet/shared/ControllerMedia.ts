@@ -1,31 +1,9 @@
-export class ControllerRemote {
-  // eslint-disable-next-line no-use-before-define
-  static instance: ControllerRemote
+export class ControllerMedia {
   readonly mediaStream: MediaStream
   private _mediaStreamTrackVideo: MediaStreamTrack|null = null
   private _mediaStreamTrackAudio: MediaStreamTrack|null = null
   constructor () {
     this.mediaStream = new MediaStream()
-  }
-
-  public static getInstance ():ControllerRemote {
-    if (!ControllerRemote.instance) {
-      ControllerRemote.instance = new ControllerRemote()
-    }
-    return ControllerRemote.instance
-  }
-
-  setMediaStream (stream:MediaStream) {
-    stream.getTracks().forEach((track) => {
-      if (track.kind === 'audio') {
-        this.removeTrackAudio()
-        this.mediaStreamTrackAudio = track
-      }
-      if (track.kind === 'video') {
-        this.removeTrackVideo()
-        this.mediaStreamTrackVideo = track
-      }
-    })
   }
 
   set mediaStreamTrackVideo (trackVideo: MediaStreamTrack | null) {

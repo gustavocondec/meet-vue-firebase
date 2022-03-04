@@ -7,8 +7,8 @@ import {
 } from 'pages/groupMeet/groupMeet-services'
 import { computed, ref, onBeforeUnmount } from 'vue'
 import { useStore } from 'src/store'
-import { ControllerLocal } from 'pages/groupMeet/shared/ControllerLocal'
-import { ControllerRemote } from 'pages/groupMeet/shared/ControllerRemote'
+import { ControllerMediaLocal } from 'pages/groupMeet/shared/ControllerMediaLocal'
+import { ControllerMediaRemote } from 'pages/groupMeet/shared/ControllerMediaRemote'
 
 export const groupMeetApi = () => {
   const callId = computed({
@@ -17,8 +17,8 @@ export const groupMeetApi = () => {
   })
   const $store = useStore()
   const pc = computed(() => $store.state.groupMeetModule.pc)
-  const controllerLocal = ref(ControllerLocal.getInstance())
-  const controllerMediaRemote = ref(ControllerRemote.getInstance())
+  const controllerMediaLocal = ref(ControllerMediaLocal.getInstance())
+  const controllerMediaRemote = ref(ControllerMediaRemote.getInstance())
   // Global State
 
   // 1. Setup media sources
@@ -28,9 +28,9 @@ export const groupMeetApi = () => {
   }
   const setupMediaLocal = async () => {
     console.log('setupMediaLocal')
-    await controllerLocal.value.openCamera()
-    await controllerLocal.value.openAudio()
-    setTracksLocalToPc(controllerLocal.value.mediaStream, pc.value)
+    await controllerMediaLocal.value.openCamera()
+    await controllerMediaLocal.value.openAudio()
+    setTracksLocalToPc(controllerMediaLocal.value.mediaStream, pc.value)
   }
   const setupMediaRemote = () => {
     console.log('setupMediaRemote')
@@ -113,15 +113,6 @@ export const groupMeetApi = () => {
   }
   const setTracksLocalToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
     if (!stream) return
-    console.log('setTracksLocalToPc')
-    // const videoTrack = stream.getVideoTracks()
-    // if (videoTrack.length >= 1) {
-    //   void cameraSender.replaceTrack(videoTrack[0])
-    // }
-    //
-    // const audioTrack = stream.getAudioTracks()
-    // if (audioTrack.length >= 1) void audioSender.replaceTrack(audioTrack[0])
-
     stream.getTracks().forEach((track) => {
       pc.addTrack(track, stream)
     })
@@ -130,7 +121,7 @@ export const groupMeetApi = () => {
     console.log('unbeforemounted')
   })
   return {
-    controllerLocal,
+    controllerMediaLocal,
     controllerMediaRemote,
     pc,
     callId,

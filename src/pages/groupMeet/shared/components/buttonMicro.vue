@@ -17,18 +17,18 @@ export default defineComponent({
   components: { IconMicrophone },
   setup () {
     const isActive = ref(false)
-    const { pc, controllerLocal } = groupMeetApi()
+    const { pc, controllerMediaLocal } = groupMeetApi()
     const senderAudio = pc.value.getSenders().find((sender) => sender?.track?.kind === 'audio')
 
     watch(isActive, async (newValue) => {
       if (!senderAudio) return
       if (newValue) {
-        await controllerLocal.value.openAudio()
-        await senderAudio.replaceTrack(controllerLocal.value.mediaStreamTrackAudio)
+        await controllerMediaLocal.value.openAudio()
+        await senderAudio.replaceTrack(controllerMediaLocal.value.mediaStreamTrackAudio)
       } else {
         console.log('se null')
         await senderAudio.replaceTrack(null)
-        controllerLocal.value.removeTrackAudio()
+        controllerMediaLocal.value.removeTrackAudio()
       }
     }, {
       immediate: true

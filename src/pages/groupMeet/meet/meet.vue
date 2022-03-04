@@ -40,22 +40,22 @@ export default defineComponent({
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { pc, controllerLocal, controllerMediaRemote, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+    const { pc, controllerMediaLocal, controllerMediaRemote, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
     const $route = useRoute()
     const $quasar = useQuasar()
     const $store = useStore()
 
     const mediaStreamLocalVideo = computed(() => {
-      if (controllerLocal.value.mediaStreamTrackVideo) {
+      if (controllerMediaLocal.value.mediaStreamTrackVideo) {
         const mediaAux = new MediaStream()
-        mediaAux.addTrack(controllerLocal.value.mediaStreamTrackVideo)
+        mediaAux.addTrack(controllerMediaLocal.value.mediaStreamTrackVideo)
         return mediaAux
       } else return null
     })
     const mediaStreamLocalAudio = computed(() => {
-      if (controllerLocal.value.mediaStreamTrackAudio) {
+      if (controllerMediaLocal.value.mediaStreamTrackAudio) {
         const mediaAux = new MediaStream()
-        mediaAux.addTrack(controllerLocal.value.mediaStreamTrackAudio)
+        mediaAux.addTrack(controllerMediaLocal.value.mediaStreamTrackAudio)
         return mediaAux
       } else return null
     })
@@ -104,7 +104,7 @@ export default defineComponent({
       mediaStreamRemoteAudio,
       mediaStreamLocalVideo,
       mediaStreamLocalAudio,
-      controllerLocal,
+      controllerMediaLocal,
       controllerMediaRemote,
       callId,
       pc

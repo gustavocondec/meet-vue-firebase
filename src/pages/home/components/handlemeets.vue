@@ -63,6 +63,7 @@ export default defineComponent({
         await $router.push('/' + callId.value)
         q.notify({ type: 'positive', message: 'Se creo sala.' })
       } catch (e) {
+        console.error(e)
         q.notify({ type: 'negative', message: String(e) })
       } finally {
         isLoadingCreate.value = false
