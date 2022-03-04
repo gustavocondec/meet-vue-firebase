@@ -16,7 +16,7 @@ export default defineComponent({
   name: 'ButtonMicro',
   components: { IconMicrophone },
   setup () {
-    const isActive = ref(true)
+    const isActive = ref(false)
     const { pc, controllerLocal } = groupMeetApi()
     const senderAudio = pc.value.getSenders().find((sender) => sender?.track?.kind === 'audio')
 
@@ -30,6 +30,8 @@ export default defineComponent({
         await senderAudio.replaceTrack(null)
         controllerLocal.value.removeTrackAudio()
       }
+    }, {
+      immediate: true
     })
 
     return {

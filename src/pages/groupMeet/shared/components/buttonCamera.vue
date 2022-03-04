@@ -37,7 +37,7 @@ import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
 export default defineComponent({
   name: 'ButtonCamera',
   setup () {
-    const isActive = ref(true)
+    const isActive = ref(false)
     const { pc, controllerLocal } = groupMeetApi()
     const senderCamera = pc.value.getSenders().find((sender) => sender?.track?.kind === 'video')
 
@@ -54,6 +54,8 @@ export default defineComponent({
         controllerLocal.value.mediaStreamTrackVideo.stop()
         controllerLocal.value.removeTrackVideo()
       }
+    }, {
+      immediate: true
     })
     return {
       isActive
