@@ -1,10 +1,10 @@
 <template>
   <div
-    :class="{'class-item':true, 'class-item--active':isActive, 'class-item--inactive':!isActive}"
-    @click.prevent="isActive=!isActive"
+    :class="{'class-item':true, 'class-item--active':isVideoActive, 'class-item--inactive':!isVideoActive}"
+    @click.prevent="$emit('update:isVideoActive',!isVideoActive)"
   >
     <svg
-      v-show="isActive"
+      v-show="isVideoActive"
       fill="white"
       focusable="false"
       height="24"
@@ -16,7 +16,7 @@
       />
     </svg>
     <svg
-      v-show="!isActive"
+      v-show="!isVideoActive"
       fill="white"
       focusable="false"
       height="24"
@@ -31,36 +31,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
-import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'ButtonCamera',
-  setup () {
-    const isActive = ref(false)
-    const { pc, controllerMediaLocal } = groupMeetApi()
-    const senderCamera = pc.value.getSenders().find((sender) => sender?.track?.kind === 'video')
-
-    watch(isActive, async (newValue) => {
-      console.log('buttonCamera', newValue)
-      if (!senderCamera) return
-      if (newValue) {
-        console.log('buttonCamera ->Set true')
-        await controllerMediaLocal.value.openCamera()
-        await senderCamera.replaceTrack(controllerMediaLocal.value.mediaStreamTrackVideo)
-      } else {
-        console.log('buttonCamera ->Set false')
-        await senderCamera.replaceTrack(null)
-        if (!controllerMediaLocal.value.mediaStreamTrackVideo) return
-        controllerMediaLocal.value.mediaStreamTrackVideo.enabled = false
-        controllerMediaLocal.value.mediaStreamTrackVideo.stop()
-        controllerMediaLocal.value.removeTrackVideo()
-      }
-    }, {
-      immediate: true
-    })
-    return {
-      isActive
+  props: {
+    isVideoActive: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
+  },
+  emits: {
+    'update:isVideoActive' (payload: any) {
+      return typeof payload === 'boolean'
     }
   }
 })
