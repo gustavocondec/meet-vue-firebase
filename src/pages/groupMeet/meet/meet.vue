@@ -32,14 +32,16 @@ import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
 import MeetButtonsBottom from 'pages/groupMeet/shared/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
 import { useStore } from 'src/store'
+import { existCallId } from 'pages/groupMeet/groupMeet-services'
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: 'PageMeet',
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { pc, controllerMediaLocal, controllerMediaRemote, callId } = groupMeetApi()
-
+    const { pc, controllerMediaLocal, controllerMediaRemote, callId, setupMediaRemote, setupMediaLocal, answerButton } = groupMeetApi()
+    const $quasar = useQuasar()
     const $router = useRouter()
     const $route = useRoute()
     const $store = useStore()
@@ -90,22 +92,22 @@ export default defineComponent({
           break
         }
         default: {
-          await $router.push({
-            name: 'premeet',
-            query: {
-              callId: $route.params.callId
-            }
-          })
-          // callId.value = String($route.params.callId)
-          // if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
-          // if (await existCallId(callId.value)) {
-          //   await setupMediaLocal()
-          //   setupMediaRemote()
-          //   await answerButton()
-          //   console.log('senders', pc.value.getSenders())
-          // } else {
-          //   console.info('No existe calls con ese Id')
-          // }
+          // await $router.push({
+          //   name: 'premeet',
+          //   query: {
+          //     callId: $route.params.callId
+          //   }
+          // })
+          callId.value = String($route.params.callId)
+          if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
+          if (await existCallId(callId.value)) {
+            await setupMediaLocal()
+            setupMediaRemote()
+            await answerButton()
+            console.log('senders', pc.value.getSenders())
+          } else {
+            console.info('No existe calls con ese Id')
+          }
           break
         }
       }
