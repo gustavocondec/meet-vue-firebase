@@ -26,13 +26,11 @@
 </template>
 
 <script lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { defineComponent, onBeforeMount, computed } from 'vue'
 import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
-import MeetButtonsBottom from 'pages/groupMeet/meet/components/buttonsBottom.vue'
+import MeetButtonsBottom from 'pages/groupMeet/shared/components/buttonsBottom.vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
-import { existCallId } from 'pages/groupMeet/groupMeet-services'
-import { useQuasar } from 'quasar'
 import { useStore } from 'src/store'
 
 export default defineComponent({
@@ -40,11 +38,19 @@ export default defineComponent({
   components: { MyItemCall, MeetButtonsBottom },
 
   setup () {
-    const { pc, controllerMediaLocal, controllerMediaRemote, callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
-    const $route = useRoute()
-    const $quasar = useQuasar()
-    const $store = useStore()
+    const { pc, controllerMediaLocal, controllerMediaRemote, callId } = groupMeetApi()
 
+    const $router = useRouter()
+    const $route = useRoute()
+    const $store = useStore()
+    if (!callId.value) {
+      void $router.push({
+        name: 'premeet',
+        query: {
+          callId: $route.params.callId
+        }
+      })
+    }
     const mediaStreamLocalVideo = computed(() => {
       if (controllerMediaLocal.value.mediaStreamTrackVideo) {
         const mediaAux = new MediaStream()
@@ -84,16 +90,22 @@ export default defineComponent({
           break
         }
         default: {
-          callId.value = String($route.params.callId)
-          if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
-          if (await existCallId(callId.value)) {
-            await setupMediaLocal()
-            setupMediaRemote()
-            await answerButton()
-            console.log('senders', pc.value.getSenders())
-          } else {
-            console.info('No existe calls con ese Id')
-          }
+          await $router.push({
+            name: 'premeet',
+            query: {
+              callId: $route.params.callId
+            }
+          })
+          // callId.value = String($route.params.callId)
+          // if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
+          // if (await existCallId(callId.value)) {
+          //   await setupMediaLocal()
+          //   setupMediaRemote()
+          //   await answerButton()
+          //   console.log('senders', pc.value.getSenders())
+          // } else {
+          //   console.info('No existe calls con ese Id')
+          // }
           break
         }
       }

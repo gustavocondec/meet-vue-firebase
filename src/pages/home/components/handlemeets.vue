@@ -27,7 +27,7 @@
         :loading="isLoadingJoin"
         flat
         label="Unirse"
-        @click="joinCode()"
+        @click="joinCode"
       />
     </div>
   </div>

@@ -13,6 +13,7 @@
           label="Solicitar unirse"
           rounded
           style="padding: 10px 15px"
+          @click="joinCode"
         />
       </div>
     </div>
@@ -20,12 +21,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onBeforeMount } from 'vue'
 import Containervideo from 'pages/groupMeet/preMeet/components/containervideo.vue'
+import { useRoute } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { groupMeetApi } from 'pages/groupMeet/shared/api-composition'
+import { existCallId } from 'pages/groupMeet/groupMeet-services'
 
 export default defineComponent({
   name: 'PreMeet',
-  components: { Containervideo }
+  components: { Containervideo },
+  setup () {
+    const $route = useRoute()
+    const $quasar = useQuasar()
+    const { callId, setupMediaLocal, setupMediaRemote, answerButton } = groupMeetApi()
+
+    const joinCode = async () => {
+      await setupMediaLocal()
+      setupMediaRemote()
+      await answerButton()
+    }
+
+    onBeforeMount(async () => {
+      console.log('onMounted premeet')
+      callId.value = String($route.query.callId)
+      if (!await existCallId(callId.value)) return $quasar.notify({ type: 'negative', message: 'No existe un Meet con ese Id' })
+    })
+
+    return {
+      joinCode
+    }
+  }
 })
 </script>
 

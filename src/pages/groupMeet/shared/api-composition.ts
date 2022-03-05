@@ -99,8 +99,7 @@ export const groupMeetApi = () => {
   }
 
   const setOnTrackRemoteToPc = (pc:RTCPeerConnection, stream: MediaStream|undefined) => {
-    console.log('setOnTrackRemoteToPc-----------------------------------Start')
-    console.log('setOnTrackRemoteToPc-----------------------------------End', stream?.getTracks())
+    console.log('setOnTrackRemoteToPc configura')
     pc.ontrack = (event) => {
       console.log('setOnTrackRemoteToPc', 'se activa evento pc.onTrack', event)
       // event.streams[0].getTracks().forEach((track) => {
@@ -108,10 +107,10 @@ export const groupMeetApi = () => {
       //   stream?.addTrack(track)
       // })
       controllerMediaRemote.value.setMediaStream(event.streams[0])
-      console.log('setOnTrackRemoteToPc-----------------------------------End', stream?.getTracks())
     }
   }
   const setTracksLocalToPc = (stream: MediaStream|null, pc: RTCPeerConnection) => {
+    console.log('setTracksLocalToPc')
     if (!stream) return
     stream.getTracks().forEach((track) => {
       pc.addTrack(track, stream)

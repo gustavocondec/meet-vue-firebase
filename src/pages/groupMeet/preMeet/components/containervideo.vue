@@ -2,30 +2,33 @@
   <div class="container-video">
     <MyItemCall
       class="container-video__video"
-      :stream-audio="streamAudio"
-      :stream-video="streamVideo"
+      :stream-audio="mediaStreamLocalAudio"
+      :stream-video="mediaStreamLocalVideo"
+      type="local"
+      name="Tú"
     />
-    <buttonsbottom class="container-video__buttons" />
+    <meet-buttons-bottom class="container-video__buttons" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, ref } from 'vue'
 import MyItemCall from 'pages/groupMeet/shared/components/myItemCall.vue'
-import Buttonsbottom from 'pages/groupMeet/preMeet/components/buttonsbottom.vue'
+import MeetButtonsBottom from 'pages/groupMeet/shared/components/buttonsBottom.vue'
 
 export default defineComponent({
   name: 'PreMeetContainerVideo',
   components: {
-    Buttonsbottom,
+    MeetButtonsBottom,
     MyItemCall
   },
   setup () {
-    const streamAudio = computed(():MediaStream | null => null)
-    const streamVideo = computed((): MediaStream | null => null)
+    const mediaStreamLocalAudio = ref<MediaStream|null>(null)
+    const mediaStreamLocalVideo = ref<MediaStream|null>(null)
+
     return {
-      streamAudio,
-      streamVideo
+      mediaStreamLocalAudio,
+      mediaStreamLocalVideo
     }
   }
 })

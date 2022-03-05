@@ -42,12 +42,14 @@ export default defineComponent({
     const senderCamera = pc.value.getSenders().find((sender) => sender?.track?.kind === 'video')
 
     watch(isActive, async (newValue) => {
+      console.log('buttonCamera', newValue)
       if (!senderCamera) return
       if (newValue) {
-        console.log('auxTrackCamera')
+        console.log('buttonCamera ->Set true')
         await controllerMediaLocal.value.openCamera()
         await senderCamera.replaceTrack(controllerMediaLocal.value.mediaStreamTrackVideo)
       } else {
+        console.log('buttonCamera ->Set false')
         await senderCamera.replaceTrack(null)
         if (!controllerMediaLocal.value.mediaStreamTrackVideo) return
         controllerMediaLocal.value.mediaStreamTrackVideo.enabled = false

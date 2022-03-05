@@ -25,8 +25,7 @@ export class ControllerMediaLocal extends ControllerMedia {
   }
 
   async openCamera () {
-    console.log('getConnectedDevices', await this.getConnectedDevices())
-    console.log('checkPermisions', await this.checkPermisions())
+    console.log('ControllerMediaLocal openCamera')
     try {
       const auxMediaStream = await navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 1.7777777778 }, audio: false })
       const videoTrack = auxMediaStream.getVideoTracks()
@@ -40,6 +39,7 @@ export class ControllerMediaLocal extends ControllerMedia {
   }
 
   async openAudio () {
+    console.log('ControllerMediaLocal openAudio')
     try {
       const auxMediaStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: { suppressLocalAudioPlayback: true, echoCancellation: true } })
       const audioTrack = auxMediaStream.getAudioTracks()

@@ -3,7 +3,7 @@
     <div class="container">
       <video
         class="container__video"
-        ref="videoDoc"
+        ref="videoRef"
         autoplay
         :controls="false"
         playsinline
@@ -18,7 +18,7 @@
       <audio
         v-if="type==='remote'"
         v-show="false"
-        ref="audioDoc"
+        ref="audioRef"
         autoplay
         :controls="false"
       />
@@ -68,16 +68,16 @@ export default defineComponent({
     }
   },
   setup (props) {
-    const videoDoc = ref<HTMLVideoElement | null>(null)
-    const audioDoc = ref<HTMLAudioElement | null>(null)
+    const videoRef = ref<HTMLVideoElement | null>(null)
+    const audioRef = ref<HTMLAudioElement | null>(null)
     const audioIsActive = ref(false)
     const videoIsActive = ref(false)
     const { streamVideo, streamAudio } = toRefs(props)
     onMounted(() => {
-      if (videoDoc.value && audioDoc.value) {
+      if (videoRef.value && audioRef.value) {
         console.log('onMounter myItemCall', streamVideo.value)
-        videoDoc.value.srcObject = streamVideo.value
-        audioDoc.value.srcObject = streamAudio.value
+        videoRef.value.srcObject = streamVideo.value
+        audioRef.value.srcObject = streamAudio.value
         videoIsActive.value = !!streamVideo.value
         audioIsActive.value = !!streamAudio.value
       }
@@ -85,31 +85,29 @@ export default defineComponent({
     watch(streamVideo, (newVal) => {
       console.log('Cambia streamVideo', newVal)
       videoIsActive.value = !!newVal
-      if (videoDoc.value) {
-        videoDoc.value.srcObject = streamVideo.value
+      if (videoRef.value) {
+        videoRef.value.srcObject = streamVideo.value
       }
     }, {
-      deep: true,
-      immediate: true
+      deep: true
     })
 
     watch(streamAudio, (newVal) => {
       console.log('Cambia streamAudio', newVal)
       audioIsActive.value = !!streamAudio.value
-      if (audioDoc.value) {
-        audioDoc.value.srcObject = streamAudio.value
+      if (audioRef.value) {
+        audioRef.value.srcObject = streamAudio.value
       }
     },
     {
-      deep: true,
-      immediate: true
+      deep: true
     })
 
     return {
       videoIsActive,
       audioIsActive,
-      videoDoc,
-      audioDoc
+      videoRef,
+      audioRef
     }
   }
 })
@@ -121,6 +119,7 @@ export default defineComponent({
   height: 100%
   max-height: 80vh
   overflow: hidden
+  border-color: black
 .container
   display: block
   height: 100%
